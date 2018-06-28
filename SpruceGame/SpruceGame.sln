@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpruceGame", "SpruceGame\SpruceGame.csproj", "{7738535C-4834-4F9E-804E-A72E814E5371}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7738535C-4834-4F9E-804E-A72E814E5371}.Debug|x86.ActiveCfg = Debug|x86
+		{7738535C-4834-4F9E-804E-A72E814E5371}.Debug|x86.Build.0 = Debug|x86
+		{7738535C-4834-4F9E-804E-A72E814E5371}.Release|x86.ActiveCfg = Release|x86
+		{7738535C-4834-4F9E-804E-A72E814E5371}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F3F4946-9716-4FA2-A919-0C3A66FAE91A}
+	EndGlobalSection
+EndGlobal
