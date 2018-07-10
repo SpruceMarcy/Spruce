@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\SpruceGame",
+    "\\SpruceGame\\SpruceGame",
+    "\\SpruceGame\\SpruceGame\\Content"
   ],
-  "SelectedNode": "\\README.md",
+  "SelectedNode": "\\SpruceGame\\SpruceGame\\Game1.cs",
   "PreviewInSolutionExplorer": false
 }
