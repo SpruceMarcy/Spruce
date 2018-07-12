@@ -5,5 +5,14 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/Cursor.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonBottom.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonBottomLeft.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonBottomRight.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonLeft.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonMiddle.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonRight.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonTop.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonTopLeft.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonTopRight.png</File>
   </SourceFiles>
 </SourceFileCollection>
