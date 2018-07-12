@@ -15,87 +15,6 @@ namespace SpruceGame
         NewGame = 1,
         InGame = 2
     }
-    public class Button
-	{
-        private Texture2D ButtonTexture;
-        Rectangle rectangle;
-        bool Enabled = true;
-        public Button(Rectangle rectangle, string Text, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict)
-        {
-            this.rectangle=rectangle;
-            ButtonTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);
-            Color[] data = new Color[rectangle.Width*rectangle.Height];
-            Color[] tempData;
-            Color temp;
-            for(int y = 0; y < rectangle.Height; y++)
-            {
-                for (int x = 0; x < rectangle.Width; x++)
-			    {
-                    temp=Color.Green;                    
-                    if (x<TextureDict["ButtonTopLeft"].Width && y<TextureDict["ButtonTopLeft"].Height)
-                    {
-                        tempData=new Color[TextureDict["ButtonTopLeft"].Width*TextureDict["ButtonTopLeft"].Height];
-                        TextureDict["ButtonTopLeft"].GetData<Color>(tempData);
-                        temp=tempData[y*TextureDict["ButtonTopLeft"].Width+x];
-                    }
-                    else if (x>rectangle.Width-TextureDict["ButtonTopRight"].Width-1 && y<TextureDict["ButtonTopRight"].Height)
-	                {
-                        tempData=new Color[TextureDict["ButtonTopRight"].Width*TextureDict["ButtonTopRight"].Height];
-                        TextureDict["ButtonTopRight"].GetData<Color>(tempData);
-                        temp=tempData[(y+1)*TextureDict["ButtonTopRight"].Width+x-rectangle.Width];
-                	}
-                    else if (x<TextureDict["ButtonBottomLeft"].Width && y>rectangle.Height-TextureDict["ButtonBottomLeft"].Height-1)
-	                {
-                        tempData=new Color[TextureDict["ButtonBottomLeft"].Width*TextureDict["ButtonBottomLeft"].Height];
-                        TextureDict["ButtonBottomLeft"].GetData<Color>(tempData);
-                        temp=tempData[(y-rectangle.Height+TextureDict["ButtonBottomLeft"].Height)*TextureDict["ButtonBottomLeft"].Width+x];
-                	}
-                    else if (x>rectangle.Width-TextureDict["ButtonBottomRight"].Width-1 && y>rectangle.Height-TextureDict["ButtonBottomRight"].Height-1)
-	                {
-                        tempData=new Color[TextureDict["ButtonBottomRight"].Width*TextureDict["ButtonBottomRight"].Height];
-                        TextureDict["ButtonBottomRight"].GetData<Color>(tempData);
-                        temp=tempData[(y-rectangle.Height+TextureDict["ButtonBottomRight"].Height+1)*TextureDict["ButtonBottomRight"].Width+x-rectangle.Width];
-                	}
-                    else if (y<TextureDict["ButtonTop"].Height)
-	                {
-                        tempData=new Color[TextureDict["ButtonTop"].Height];
-                        TextureDict["ButtonTop"].GetData<Color>(tempData);
-                        temp=tempData[y];
-	                }
-                    else if (x<TextureDict["ButtonLeft"].Width)
-	                {
-                        tempData=new Color[TextureDict["ButtonLeft"].Width];
-                        TextureDict["ButtonLeft"].GetData<Color>(tempData);
-                        temp=tempData[x];
-	                }
-                    else if (y>rectangle.Height-TextureDict["ButtonBottom"].Height-1)
-	                {
-                        tempData=new Color[TextureDict["ButtonBottom"].Height];
-                        TextureDict["ButtonBottom"].GetData<Color>(tempData);
-                        temp=tempData[y-rectangle.Height+TextureDict["ButtonBottom"].Height];
-	                }
-                    else if (x>rectangle.Width-TextureDict["ButtonRight"].Width-1)
-	                {
-                        tempData=new Color[TextureDict["ButtonRight"].Width];
-                        TextureDict["ButtonRight"].GetData<Color>(tempData);
-                        temp=tempData[x-rectangle.Width+TextureDict["ButtonRight"].Width];
-	                }
-                    else
-                	{
-                        tempData=new Color[1];
-                        TextureDict["ButtonMiddle"].GetData<Color>(tempData);
-                        temp=tempData[0];
-                	}
-                    data[y*rectangle.Width+x]=temp;
-			    }
-            }
-            ButtonTexture.SetData(data);
-        }
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(ButtonTexture,rectangle.Location.ToVector2());
-        }
-	}
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
@@ -107,7 +26,7 @@ namespace SpruceGame
         //--------MB: Declare variables here that are global to the game--------
         Dictionary<string, Texture2D> Textures;//MB: This variable stores all textures, accessible with an identifier
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
-        Button[] MenuButtons;
+
         //---------------------------------------------------------------------
 
         public Game1()
@@ -149,20 +68,8 @@ namespace SpruceGame
             //--------MB: Load all the textures here--------
             Textures.Add("Cursor", Content.Load<Texture2D>("Cursor"));
             
-            Textures.Add("ButtonTopLeft",Content.Load<Texture2D>("ButtonTopLeft"));
-            Textures.Add("ButtonTop",Content.Load<Texture2D>("ButtonTop"));
-            Textures.Add("ButtonTopRight",Content.Load<Texture2D>("ButtonTopRight"));
-            Textures.Add("ButtonLeft",Content.Load<Texture2D>("ButtonLeft"));
-            Textures.Add("ButtonMiddle",Content.Load<Texture2D>("ButtonMiddle"));
-            Textures.Add("ButtonRight",Content.Load<Texture2D>("ButtonRight"));
-            Textures.Add("ButtonBottomLeft",Content.Load<Texture2D>("ButtonBottomLeft"));
-            Textures.Add("ButtonBottom",Content.Load<Texture2D>("ButtonBottom"));
-            Textures.Add("ButtonBottomRight",Content.Load<Texture2D>("ButtonBottomRight"));       
-
             //---------------------------------------------
             //--------MB: Load anything else here--------
-            MenuButtons=new Button[4];
-            MenuButtons[0]=new Button(new Rectangle(500,200,128,50),"",GraphicsDevice,Textures);
 
             //------------------------------------------
         }
@@ -213,7 +120,6 @@ namespace SpruceGame
             switch (GameState)//MB: This is where State-Dependent screen updating goes
 	        {
 	        	case GameState.MainMenu:
-                    MenuButtons[0].Draw(spriteBatch);
                     Window.Title=(gameTime.TotalGameTime.ToString() + " - " + 1/(gameTime.ElapsedGameTime.TotalSeconds) + "FPS");//MB: for debugging; shows game duration and fps in the title
                     break;//MB: This stops the thread running into the next case. Came with the switch.
                 case GameState.NewGame:

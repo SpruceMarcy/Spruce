@@ -2,13 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\SpruceGame",
-    "\\SpruceGame\\.vs",
-    "\\SpruceGame\\.vs\\SpruceGame",
-    "\\SpruceGame\\.vs\\SpruceGame\\DesignTimeBuild",
-    "\\SpruceGame\\.vs\\SpruceGame\\v15",
     "\\SpruceGame\\SpruceGame",
     "\\SpruceGame\\SpruceGame\\Content"
   ],
-  "SelectedNode": "\\SpruceGame\\SpruceGame\\Content\\Content.mgcb",
-  "PreviewInSolutionExplorer": true
+  "SelectedNode": "\\SpruceGame\\SpruceGame\\Game1.cs",
+  "PreviewInSolutionExplorer": false
 }

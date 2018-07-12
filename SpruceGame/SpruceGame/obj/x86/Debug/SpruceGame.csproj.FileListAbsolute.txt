@@ -24,12 +24,3 @@ C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\obj\x86\Debug\SpruceGam
 C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\obj\x86\Debug\SpruceGame.exe
 C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\obj\x86\Debug\SpruceGame.pdb
 C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\Cursor.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonLeft.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonMiddle.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonTop.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonTopLeft.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonTopRight.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonBottom.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonBottomLeft.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonBottomRight.xnb
-C:\Users\mdrbr\Source\Repos\Spruce\SpruceGame\SpruceGame\bin\Windows\x86\Debug\Content\ButtonRight.xnb
