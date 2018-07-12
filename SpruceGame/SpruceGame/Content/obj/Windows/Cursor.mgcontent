@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SourceFile>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/Cursor.png</SourceFile>
-  <SourceTime>2018-07-07T20:29:39.218687+01:00</SourceTime>
+  <SourceTime>2018-07-11T09:10:07.4850456+01:00</SourceTime>
   <DestFile>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/bin/Windows/Cursor.xnb</DestFile>
-  <DestTime>2018-07-07T20:30:12.8595339+01:00</DestTime>
+  <DestTime>2018-07-12T07:33:14.9324639+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2017-03-01T15:05:36+00:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
