@@ -16,6 +16,89 @@ namespace SpruceGame
         InGame = 2
     }
     /// <summary>
+    /// MB: This class is to encapsulate all features of a clickable button
+    /// </summary>
+    public class Button
+	{
+        private Texture2D ButtonTexture;
+        readonly Rectangle rectangle;
+        public bool Enabled = true;
+        public string Text;
+        SpriteFont ButtonFont;
+        public Button(Rectangle rectangle, string Text, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict, SpriteFont ButtonFont)
+        {
+            this.rectangle=rectangle;
+            this.Text=Text;
+            this.ButtonFont=ButtonFont;
+            ButtonTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);
+            Color[] TextureData = new Color[rectangle.Width*rectangle.Height];
+            Color[] TemplateData1D = new Color[TextureDict["ButtonUnpressed"].Width * TextureDict["ButtonUnpressed"].Height];
+            TextureDict["ButtonUnpressed"].GetData(TemplateData1D);
+            Color[,] TemplateData2D = new Color[TextureDict["ButtonUnpressed"].Width, TextureDict["ButtonUnpressed"].Height];
+            {
+                int X = 0;
+                int Y = 0;
+                int TemplateWidth = TextureDict["ButtonUnpressed"].Width;
+                foreach (Color color in TemplateData1D)
+                {
+                    TemplateData2D[X, Y] = color;
+                    X++;
+                    if (X >= TemplateWidth)
+                    {
+                        X = 0;
+                        Y++;
+                    }
+                }
+            }
+            int BorderWidth = (TextureDict["ButtonUnpressed"].Width - 1) / 2;
+            int BorderHeight = (TextureDict["ButtonUnpressed"].Height - 1) / 2;
+            int Bottom = rectangle.Height - BorderHeight;
+            int Right = rectangle.Width - BorderWidth;
+            int TemplateX = 0;
+            int TemplateY = 0;
+            for (int y = 0; y < rectangle.Height; y++)
+            {
+                for (int x = 0; x < rectangle.Width; x++)
+			    {
+                    TemplateX = x;
+                    if (TemplateX > BorderWidth)
+                    {
+                        if (TemplateX > Right-1)
+                        {
+                            TemplateX = x - Right+BorderWidth+1;
+                        }
+                        else
+                        {
+                            TemplateX = BorderWidth;
+                        }
+                    }
+                    TemplateY = y;
+                    if (TemplateY > BorderHeight)
+                    {
+                        if (TemplateY > Bottom-1)
+                        {
+                            TemplateY = y - Bottom + BorderHeight+1;
+                        }
+                        else
+                        {
+                            TemplateY = BorderHeight;
+                        }
+                    }
+                    TextureData[y*rectangle.Width+x]=TemplateData2D[TemplateX,TemplateY];
+			    }
+            }
+            ButtonTexture.SetData(TextureData);
+            
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(ButtonTexture,rectangle.Location.ToVector2());
+            float width= ButtonFont.MeasureString(Text).X;
+            float height=ButtonFont.MeasureString(Text).Y;
+            spriteBatch.DrawString(ButtonFont,Text,new Vector2(rectangle.X+(rectangle.Width-width)/2,rectangle.Y+(rectangle.Height-height)/2),Color.Black);
+        }
+	}
+    /// <summary>
     /// This is the main type for your game.
     /// </summary>
     public class Game1 : Game
@@ -25,8 +108,9 @@ namespace SpruceGame
 
         //--------MB: Declare variables here that are global to the game--------
         Dictionary<string, Texture2D> Textures;//MB: This variable stores all textures, accessible with an identifier
+        SpriteFont MainFont;
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
-
+        Button[] MenuButtons;
         //---------------------------------------------------------------------
 
         public Game1()
@@ -41,6 +125,7 @@ namespace SpruceGame
         /// This is where it can query for any required services and load any non-graphic
         /// related content.  Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
+        /// MB: Runs after LoadContent
         /// </summary>
         protected override void Initialize()
         {
@@ -52,13 +137,14 @@ namespace SpruceGame
             //graphics.ToggleFullScreen();//MB: IF YOU CRASH IN FULL SCREEN YOU DIE IN REAL LIFE
             graphics.ApplyChanges();//MB: Updates the screen size
             GameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
-
+            MenuButtons=GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth/2,graphics.PreferredBackBufferHeight/2));
             //----------------------------------------------------------------------------------------
         }
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
+        /// MB: Runs before Initialize
         /// </summary>
         protected override void LoadContent()
         {
@@ -67,10 +153,13 @@ namespace SpruceGame
 
             //--------MB: Load all the textures here--------
             Textures.Add("Cursor", Content.Load<Texture2D>("Cursor"));
-            
+            Textures.Add("ButtonUnpressed",Content.Load<Texture2D>("ButtonUnpressed"));       
+
+            MainFont=Content.Load<SpriteFont>("MainFont");
+
             //---------------------------------------------
             //--------MB: Load anything else here--------
-
+            
             //------------------------------------------
         }
 
@@ -120,6 +209,10 @@ namespace SpruceGame
             switch (GameState)//MB: This is where State-Dependent screen updating goes
 	        {
 	        	case GameState.MainMenu:
+                    foreach (Button button in MenuButtons)
+                   	{
+                        button.Draw(spriteBatch);
+	                }
                     Window.Title=(gameTime.TotalGameTime.ToString() + " - " + 1/(gameTime.ElapsedGameTime.TotalSeconds) + "FPS");//MB: for debugging; shows game duration and fps in the title
                     break;//MB: This stops the thread running into the next case. Came with the switch.
                 case GameState.NewGame:
@@ -133,6 +226,16 @@ namespace SpruceGame
 
             spriteBatch.End();//MB: Drawing not allowed after this
             base.Draw(gameTime);//Monogame
+        }
+
+        private Button[] GenerateMenuButtons(Vector2 CentreScreen)
+        {
+            Button[] MenuButtons = new Button[4];
+            MenuButtons[0]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-191,256,82),"New Game",GraphicsDevice,Textures,MainFont);
+            MenuButtons[1]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-91,256,82),"Load Game",GraphicsDevice,Textures,MainFont);
+            MenuButtons[2]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+9,256,82),"Options",GraphicsDevice,Textures,MainFont);
+            MenuButtons[3]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+109,256,82),"Exit",GraphicsDevice,Textures,MainFont);
+            return MenuButtons;
         }
     }
 }
