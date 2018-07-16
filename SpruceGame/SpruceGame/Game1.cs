@@ -20,22 +20,31 @@ namespace SpruceGame
     /// </summary>
     public class Button
 	{
-        private Texture2D ButtonTexture;
-        readonly Rectangle rectangle;
-        public bool Enabled = true;
-        public string Text;
-        SpriteFont ButtonFont;
+        private Texture2D ButtonTexture;//MB: Holds the texture for the sprite without text
+        readonly Rectangle rectangle;//MB: This is the size and position of the button.
+                                     //MB: If you need to change it; just declare a new button.
+        public bool Enabled = true;//MB: If false, the button will be greyed out and not function.
+        public string Text;//MB: The message on the button. Can be changed.
+        SpriteFont ButtonFont;//MB: The font used to display the text on the button.
+        /// <summary>
+        /// Instanciates a button, creating the appropriate textures for it.
+        /// </summary>
+        /// <param name="rectangle">The size and shape of the button.</param>
+        /// <param name="Text">The message on the button.</param>
+        /// <param name="graphicsDevice"></param>
+        /// <param name="TextureDict"></param>
+        /// <param name="ButtonFont">The font of the message on the button.</param>
         public Button(Rectangle rectangle, string Text, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict, SpriteFont ButtonFont)
         {
             this.rectangle=rectangle;
             this.Text=Text;
             this.ButtonFont=ButtonFont;
-            ButtonTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);
-            Color[] TextureData = new Color[rectangle.Width*rectangle.Height];
-            Color[] TemplateData1D = new Color[TextureDict["ButtonUnpressed"].Width * TextureDict["ButtonUnpressed"].Height];
-            TextureDict["ButtonUnpressed"].GetData(TemplateData1D);
-            Color[,] TemplateData2D = new Color[TextureDict["ButtonUnpressed"].Width, TextureDict["ButtonUnpressed"].Height];
-            {
+            ButtonTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);//MB: Creates a blank texture for the button
+            Color[] TextureData = new Color[rectangle.Width*rectangle.Height]; //MB: An array to hold the color values of the button texture.
+            Color[] TemplateData1D = new Color[TextureDict["ButtonUnpressed"].Width * TextureDict["ButtonUnpressed"].Height];//MB: An array to hold the color values of the template texture.
+            TextureDict["ButtonUnpressed"].GetData(TemplateData1D);//MB: Puts the template data in an array
+            Color[,] TemplateData2D = new Color[TextureDict["ButtonUnpressed"].Width, TextureDict["ButtonUnpressed"].Height];//MB: A 2D array to make accessing the color values easier.
+            {//MB: This indented section just formats TemplateData1D into TemplateData2D
                 int X = 0;
                 int Y = 0;
                 int TemplateWidth = TextureDict["ButtonUnpressed"].Width;
@@ -56,6 +65,8 @@ namespace SpruceGame
             int Right = rectangle.Width - BorderWidth;
             int TemplateX = 0;
             int TemplateY = 0;
+            //MB: The following code assigns each pixel of the button the data from the corresponding template pixel.
+            //MB: This section is very susceptible to off-by-one errors. Please don't touch it unless necessary. 
             for (int y = 0; y < rectangle.Height; y++)
             {
                 for (int x = 0; x < rectangle.Width; x++)
@@ -87,15 +98,18 @@ namespace SpruceGame
                     TextureData[y*rectangle.Width+x]=TemplateData2D[TemplateX,TemplateY];
 			    }
             }
-            ButtonTexture.SetData(TextureData);
-            
+            ButtonTexture.SetData(TextureData);//MB: Sets the actual texture to the locally generated texture
         }
+        /// <summary>
+        /// Draws the button texture and text to a given SpriteBatch
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to draw the button to.</param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(ButtonTexture,rectangle.Location.ToVector2());
-            float width= ButtonFont.MeasureString(Text).X;
-            float height=ButtonFont.MeasureString(Text).Y;
-            spriteBatch.DrawString(ButtonFont,Text,new Vector2(rectangle.X+(rectangle.Width-width)/2,rectangle.Y+(rectangle.Height-height)/2),Color.Black);
+            spriteBatch.Draw(ButtonTexture,rectangle.Location.ToVector2());//MB: Draws the background
+            float width= ButtonFont.MeasureString(Text).X;//MB: Gets the width of the text
+            float height=ButtonFont.MeasureString(Text).Y;//MB: Gets the height of the text
+            spriteBatch.DrawString(ButtonFont,Text,new Vector2(rectangle.X+(rectangle.Width-width)/2,rectangle.Y+(rectangle.Height-height)/2),Color.Black);//MB: Draws the text in the middle of the button
         }
 	}
     /// <summary>
@@ -108,9 +122,9 @@ namespace SpruceGame
 
         //--------MB: Declare variables here that are global to the game--------
         Dictionary<string, Texture2D> Textures;//MB: This variable stores all textures, accessible with an identifier
-        SpriteFont MainFont;
+        SpriteFont MainFont;//MB: This variable holds the font to be used. Only applies to buttons as of 16/07/18
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
-        Button[] MenuButtons;
+        Button[] MenuButtons;//MB: The array of buttons on the main menu.
         //---------------------------------------------------------------------
 
         public Game1()
@@ -137,7 +151,7 @@ namespace SpruceGame
             //graphics.ToggleFullScreen();//MB: IF YOU CRASH IN FULL SCREEN YOU DIE IN REAL LIFE
             graphics.ApplyChanges();//MB: Updates the screen size
             GameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
-            MenuButtons=GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth/2,graphics.PreferredBackBufferHeight/2));
+            MenuButtons=GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth/2,graphics.PreferredBackBufferHeight/2));//MB: Instanciates all the menu buttons
             //----------------------------------------------------------------------------------------
         }
 
@@ -209,7 +223,7 @@ namespace SpruceGame
             switch (GameState)//MB: This is where State-Dependent screen updating goes
 	        {
 	        	case GameState.MainMenu:
-                    foreach (Button button in MenuButtons)
+                    foreach (Button button in MenuButtons) //MB: Draws the buttons
                    	{
                         button.Draw(spriteBatch);
 	                }
@@ -228,6 +242,11 @@ namespace SpruceGame
             base.Draw(gameTime);//Monogame
         }
 
+        /// <summary>
+        /// Returns an array of the buttons on the main menu. Hardcoded content.
+        /// </summary>
+        /// <param name="CentreScreen">The coordinates of the middle of the screen.</param>
+        /// <returns>Array of buttons</returns>
         private Button[] GenerateMenuButtons(Vector2 CentreScreen)
         {
             Button[] MenuButtons = new Button[4];
