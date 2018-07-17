@@ -167,8 +167,8 @@ namespace SpruceGame
 
             //--------MB: Load all the textures here--------
             Textures.Add("Cursor", Content.Load<Texture2D>("Cursor"));
-            Textures.Add("ButtonUnpressed",Content.Load<Texture2D>("ButtonUnpressed"));       
-
+            Textures.Add("ButtonUnpressed",Content.Load<Texture2D>("ButtonUnpressed"));
+            Textures.Add("Background", Content.Load<Texture2D>("Background"));
             MainFont=Content.Load<SpriteFont>("MainFont");
 
             //---------------------------------------------
@@ -223,6 +223,7 @@ namespace SpruceGame
             switch (GameState)//MB: This is where State-Dependent screen updating goes
 	        {
 	        	case GameState.MainMenu:
+                    spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));
                     foreach (Button button in MenuButtons) //MB: Draws the buttons
                    	{
                         button.Draw(spriteBatch);
