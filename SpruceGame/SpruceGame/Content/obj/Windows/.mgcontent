@@ -5,5 +5,8 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/Cursor.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/MainFont.spritefont</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonUnpressed.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/Background.png</File>
   </SourceFiles>
 </SourceFileCollection>
