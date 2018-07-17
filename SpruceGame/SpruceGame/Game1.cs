@@ -13,7 +13,9 @@ namespace SpruceGame
     {
         MainMenu = 0,
         NewGame = 1,
-        InGame = 2
+        InGame = 2,
+        LoadGame=3,
+        Options=4
     }
     /// <summary>
     /// MB: This class is to encapsulate all features of a clickable button
@@ -111,6 +113,15 @@ namespace SpruceGame
             float height=ButtonFont.MeasureString(Text).Y;//MB: Gets the height of the text
             spriteBatch.DrawString(ButtonFont,Text,new Vector2(rectangle.X+(rectangle.Width-width)/2,rectangle.Y+(rectangle.Height-height)/2),Color.Black);//MB: Draws the text in the middle of the button
         }
+        /// <summary>
+        /// Returns whether or not the button has been activated when given the location of a click.
+        /// </summary>
+        /// <param name="MousePos">The position of a mouse click.</param>
+        /// <returns>Boolean</returns>
+        public bool ClickCheck(Point MousePos)
+        {
+            return Enabled && rectangle.Contains(MousePos);
+        }
 	}
     /// <summary>
     /// This is the main type for your game.
@@ -196,13 +207,29 @@ namespace SpruceGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();//Monogame MB: This means you can press escape to exit
                        //MB: Potentially we could store the keyboard.GetState() in a variable so we don't have to keep calling it
+            MouseState mouseState = Mouse.GetState();
             switch (GameState)//MB: This is where State-Dependent game logic goes
 	        {
-	        	case GameState.MainMenu:    
+	        	case GameState.MainMenu:
+                    if (mouseState.LeftButton==ButtonState.Pressed) //MB: if mousedown
+                    {
+                        if (MenuButtons[3].ClickCheck(mouseState.Position))//MB: If exit button clicked
+                            Exit();
+                        if (MenuButtons[0].ClickCheck(mouseState.Position))//MB: If new game button clicked
+                            GameState =GameState.NewGame;
+                        if (MenuButtons[1].ClickCheck(mouseState.Position))//MB: If load game button clicked
+                            GameState = GameState.LoadGame;
+                        if (MenuButtons[2].ClickCheck(mouseState.Position))//MB: If options button clicked
+                            GameState = GameState.Options;
+                    }
                     break;//MB: This stops the thread running into the next case. Came with the switch.
                 case GameState.NewGame:
                     break;
                 case GameState.InGame:
+                    break;
+                case GameState.LoadGame:
+                    break;
+                case GameState.Options:
                     break;
                 default:
                     throw new System.Exception("Invalid GameState");//MB: This should never run, which is why it'd throw an error
@@ -223,7 +250,7 @@ namespace SpruceGame
             switch (GameState)//MB: This is where State-Dependent screen updating goes
 	        {
 	        	case GameState.MainMenu:
-                    spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));
+                    spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));//MB: Draws the background
                     foreach (Button button in MenuButtons) //MB: Draws the buttons
                    	{
                         button.Draw(spriteBatch);
@@ -233,6 +260,10 @@ namespace SpruceGame
                 case GameState.NewGame:
                     break;
                 case GameState.InGame:
+                    break;
+                case GameState.LoadGame:
+                    break;
+                case GameState.Options:
                     break;
                 default:
                     throw new System.Exception("Invalid GameState");//MB: This should never run, which is why it'd throw an error
