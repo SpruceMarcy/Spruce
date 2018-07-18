@@ -24,6 +24,9 @@ namespace SpruceGame
     public class Button
 	{
         private Texture2D ButtonTexture;//MB: Holds the texture for the sprite without text
+        private Texture2D HoverTexture;
+        private Texture2D PressedTexture;
+        private Texture2D DisabledTexture;
         readonly Rectangle rectangle;//MB: This is the size and position of the button.
                                      //MB: If you need to change it; just declare a new button.
         public bool Enabled = true;//MB: If false, the button will be greyed out and not function.
@@ -43,8 +46,13 @@ namespace SpruceGame
             this.Text=Text;
             this.ButtonFont=ButtonFont;
             ButtonTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);//MB: Creates a blank texture for the button
-
+            HoverTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);
+            PressedTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);
+            DisabledTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);
             ButtonTexture.SetData(GetTextureData(TextureDict["ButtonUnpressed"]));//MB: Sets the actual texture to the locally generated texture
+            HoverTexture.SetData(GetTextureData(TextureDict["ButtonHover"]));
+            PressedTexture.SetData(GetTextureData(TextureDict["ButtonPressed"]));
+            DisabledTexture.SetData(GetTextureData(TextureDict["ButtonDisabled"]));
         }
         /// <summary>
         /// Returns the colour array of the full button texture when provided a template
@@ -118,7 +126,22 @@ namespace SpruceGame
         /// <param name="spriteBatch">The SpriteBatch to draw the button to.</param>
         public void Draw(SpriteBatch spriteBatch,MouseState mouseState)
         {
-            spriteBatch.Draw(ButtonTexture,rectangle.Location.ToVector2());//MB: Draws the background
+            if (rectangle.Contains(mouseState.Position))
+        	{
+                if (mouseState.LeftButton==ButtonState.Pressed)
+	            {
+                    spriteBatch.Draw(PressedTexture,rectangle.Location.ToVector2());
+	            }
+                else
+	            {
+                    spriteBatch.Draw(HoverTexture,rectangle.Location.ToVector2());
+	            }
+                
+        	}
+            else
+            {
+                spriteBatch.Draw(ButtonTexture,rectangle.Location.ToVector2());//MB: Draws the background
+            }
             float width= ButtonFont.MeasureString(Text).X;//MB: Gets the width of the text
             float height=ButtonFont.MeasureString(Text).Y;//MB: Gets the height of the text
             spriteBatch.DrawString(ButtonFont,Text,new Vector2(rectangle.X+(rectangle.Width-width)/2,rectangle.Y+(rectangle.Height-height)/2),Color.Black);//MB: Draws the text in the middle of the button
@@ -145,6 +168,7 @@ namespace SpruceGame
         Dictionary<string, Texture2D> Textures;//MB: This variable stores all textures, accessible with an identifier
         SpriteFont MainFont;//MB: This variable holds the font to be used. Only applies to buttons as of 16/07/18
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
+        MouseState PreviousMouseState;
         Button[] MenuButtons;//MB: The array of buttons on the main menu.
         Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
         //---------------------------------------------------------------------
@@ -174,6 +198,7 @@ namespace SpruceGame
             graphics.ApplyChanges();//MB: Updates the screen size
             GameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
             MenuButtons=GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth/2,graphics.PreferredBackBufferHeight/2));//MB: Instanciates all the menu buttons
+            PreviousMouseState=Mouse.GetState();
             //----------------------------------------------------------------------------------------
         }
 
@@ -229,7 +254,7 @@ namespace SpruceGame
             switch (GameState)//MB: This is where State-Dependent game logic goes
 	        {
 	        	case GameState.MainMenu:
-                    if (mouseState.LeftButton==ButtonState.Pressed) //MB: if mousedown
+                    if (PreviousMouseState.LeftButton==ButtonState.Pressed && mouseState.LeftButton==ButtonState.Released) //MB: if mousedown
                     {
                         if (MenuButtons[3].ClickCheck(mouseState.Position))//MB: If exit button clicked
                             Exit();
@@ -253,7 +278,7 @@ namespace SpruceGame
                     throw new System.Exception("Invalid GameState");//MB: This should never run, which is why it'd throw an error
         	}
             base.Update(gameTime);//Monogame
-            
+            PreviousMouseState=mouseState;
         }
 
         /// <summary>
