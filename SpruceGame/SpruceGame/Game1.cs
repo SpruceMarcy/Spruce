@@ -43,14 +43,23 @@ namespace SpruceGame
             this.Text=Text;
             this.ButtonFont=ButtonFont;
             ButtonTexture=new Texture2D(graphicsDevice,rectangle.Width,rectangle.Height);//MB: Creates a blank texture for the button
+
+            ButtonTexture.SetData(GetTextureData(TextureDict["ButtonUnpressed"]));//MB: Sets the actual texture to the locally generated texture
+        }
+        /// <summary>
+        /// Returns the colour array of the full button texture when provided a template
+        /// </summary>
+        /// <returns>Array of Color</returns>
+        private Color[] GetTextureData(Texture2D Template)
+        {
             Color[] TextureData = new Color[rectangle.Width*rectangle.Height]; //MB: An array to hold the color values of the button texture.
-            Color[] TemplateData1D = new Color[TextureDict["ButtonUnpressed"].Width * TextureDict["ButtonUnpressed"].Height];//MB: An array to hold the color values of the template texture.
-            TextureDict["ButtonUnpressed"].GetData(TemplateData1D);//MB: Puts the template data in an array
-            Color[,] TemplateData2D = new Color[TextureDict["ButtonUnpressed"].Width, TextureDict["ButtonUnpressed"].Height];//MB: A 2D array to make accessing the color values easier.
+            Color[] TemplateData1D = new Color[Template.Width * Template.Height];//MB: An array to hold the color values of the template texture.
+            Template.GetData(TemplateData1D);//MB: Puts the template data in an array
+            Color[,] TemplateData2D = new Color[Template.Width, Template.Height];//MB: A 2D array to make accessing the color values easier.
             {//MB: This indented section just formats TemplateData1D into TemplateData2D
                 int X = 0;
                 int Y = 0;
-                int TemplateWidth = TextureDict["ButtonUnpressed"].Width;
+                int TemplateWidth = Template.Width;
                 foreach (Color color in TemplateData1D)
                 {
                     TemplateData2D[X, Y] = color;
@@ -62,8 +71,8 @@ namespace SpruceGame
                     }
                 }
             }
-            int BorderWidth = (TextureDict["ButtonUnpressed"].Width - 1) / 2;
-            int BorderHeight = (TextureDict["ButtonUnpressed"].Height - 1) / 2;
+            int BorderWidth = (Template.Width - 1) / 2;
+            int BorderHeight = (Template.Height - 1) / 2;
             int Bottom = rectangle.Height - BorderHeight;
             int Right = rectangle.Width - BorderWidth;
             int TemplateX = 0;
@@ -101,13 +110,13 @@ namespace SpruceGame
                     TextureData[y*rectangle.Width+x]=TemplateData2D[TemplateX,TemplateY];
 			    }
             }
-            ButtonTexture.SetData(TextureData);//MB: Sets the actual texture to the locally generated texture
+            return TextureData;
         }
         /// <summary>
         /// Draws the button texture and text to a given SpriteBatch
         /// </summary>
         /// <param name="spriteBatch">The SpriteBatch to draw the button to.</param>
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch,MouseState mouseState)
         {
             spriteBatch.Draw(ButtonTexture,rectangle.Location.ToVector2());//MB: Draws the background
             float width= ButtonFont.MeasureString(Text).X;//MB: Gets the width of the text
@@ -181,6 +190,9 @@ namespace SpruceGame
             //--------MB: Load all the textures here--------
             Textures.Add("Cursor", Content.Load<Texture2D>("Cursor"));
             Textures.Add("ButtonUnpressed",Content.Load<Texture2D>("ButtonUnpressed"));
+            Textures.Add("ButtonPressed", Content.Load<Texture2D>("ButtonPressed"));
+            Textures.Add("ButtonHover", Content.Load<Texture2D>("ButtonHover"));
+            Textures.Add("ButtonDisabled", Content.Load<Texture2D>("ButtonDisabled"));
             Textures.Add("Background", Content.Load<Texture2D>("Background"));
 
             MainFont=Content.Load<SpriteFont>("MainFont");
@@ -259,7 +271,7 @@ namespace SpruceGame
                     spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));//MB: Draws the background
                     foreach (Button button in MenuButtons) //MB: Draws the buttons
                    	{
-                        button.Draw(spriteBatch);
+                        button.Draw(spriteBatch, Mouse.GetState());
 	                }
                     Window.Title=(gameTime.TotalGameTime.ToString() + " - " + 1/(gameTime.ElapsedGameTime.TotalSeconds) + "FPS");//MB: for debugging; shows game duration and fps in the title
                     break;//MB: This stops the thread running into the next case. Came with the switch.
