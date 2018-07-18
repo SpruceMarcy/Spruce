@@ -56,3 +56,9 @@
 /processorParam:TextureFormat=Color
 /build:Background.png
 
+#begin PlaceholderMusic.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:PlaceholderMusic.mp3
+

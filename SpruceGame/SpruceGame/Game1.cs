@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
@@ -136,6 +137,7 @@ namespace SpruceGame
         SpriteFont MainFont;//MB: This variable holds the font to be used. Only applies to buttons as of 16/07/18
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
         Button[] MenuButtons;//MB: The array of buttons on the main menu.
+        Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
         //---------------------------------------------------------------------
 
         public Game1()
@@ -180,11 +182,15 @@ namespace SpruceGame
             Textures.Add("Cursor", Content.Load<Texture2D>("Cursor"));
             Textures.Add("ButtonUnpressed",Content.Load<Texture2D>("ButtonUnpressed"));
             Textures.Add("Background", Content.Load<Texture2D>("Background"));
+
             MainFont=Content.Load<SpriteFont>("MainFont");
 
             //---------------------------------------------
             //--------MB: Load anything else here--------
-            
+            song = Content.Load<Song>("PlaceholderMusic");
+            MediaPlayer.Play(song);
+            MediaPlayer.IsRepeating = true;
+
             //------------------------------------------
         }
 
