@@ -98,3 +98,10 @@
 /processorParam:TextureFormat=Color
 /build:ButtonPressed.png
 
+#begin Monospace.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Monospace.spritefont
+
