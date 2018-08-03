@@ -29,6 +29,7 @@ namespace SpruceGame
         //--------MB: Declare variables here that are global to the game--------
         Dictionary<string, Texture2D> Textures;//MB: This variable stores all textures, accessible with an identifier
         SpriteFont MainFont;//MB: This variable holds the font to be used. Only applies to buttons as of 16/07/18
+        SpriteFont InputFont;//MB: A monospaced font
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
         MouseState PreviousMouseState;
         Button[] MenuButtons;//MB: The array of buttons on the main menu.
@@ -83,6 +84,7 @@ namespace SpruceGame
             Textures.Add("Background", Content.Load<Texture2D>("Background"));
 
             MainFont=Content.Load<SpriteFont>("MainFont");
+            InputFont = Content.Load<SpriteFont>("Monospace");
 
             //---------------------------------------------
             //--------MB: Load anything else here--------
@@ -112,6 +114,7 @@ namespace SpruceGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();//Monogame MB: This means you can press escape to exit
                        //MB: Potentially we could store the keyboard.GetState() in a variable so we don't have to keep calling it
+            KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
             switch (GameState)//MB: This is where State-Dependent game logic goes
 	        {
@@ -137,7 +140,7 @@ namespace SpruceGame
                 case GameState.Options:
                     break;
                 default:
-                    throw new System.Exception("Invalid GameState");//MB: This should never run, which is why it'd throw an error
+                    throw new System.NotImplementedException("Invalid GameState");//MB: This should never run, which is why it'd throw an error
         	}
             base.Update(gameTime);//Monogame
             PreviousMouseState=mouseState;
@@ -171,7 +174,7 @@ namespace SpruceGame
                 case GameState.Options:
                     break;
                 default:
-                    throw new System.Exception("Invalid GameState");//MB: This should never run, which is why it'd throw an error
+                    throw new System.NotImplementedException("Invalid GameState");//MB: This should never run, which is why it'd throw an error
         	}
             spriteBatch.Draw(Textures["Cursor"],new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y));//MB: Draws the cursor at the mouse
 
