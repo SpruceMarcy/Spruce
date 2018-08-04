@@ -14,9 +14,11 @@ public class Button
     private Texture2D HoverTexture;
     private Texture2D PressedTexture;
     private Texture2D DisabledTexture;
+    private Texture2D SelectedTexture;
     readonly Rectangle rectangle;//MB: This is the size and position of the button.
                                  //MB: If you need to change it; just declare a new button.
     public bool Enabled = true;//MB: If false, the button will be greyed out and not function.
+    public bool Selected = false;//MB: For use externally as radio buttons and checkboxes
     public string Text;//MB: The message on the button. Can be changed.
     SpriteFont ButtonFont;//MB: The font used to display the text on the button.
                           /// <summary>
@@ -36,10 +38,12 @@ public class Button
         HoverTexture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
         PressedTexture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
         DisabledTexture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
+        SelectedTexture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
         ButtonTexture.SetData(GetTextureData(TextureDict["ButtonUnpressed"]));//MB: Sets the actual texture to the locally generated texture
         HoverTexture.SetData(GetTextureData(TextureDict["ButtonHover"]));
         PressedTexture.SetData(GetTextureData(TextureDict["ButtonPressed"]));
         DisabledTexture.SetData(GetTextureData(TextureDict["ButtonDisabled"]));
+        SelectedTexture.SetData(GetTextureData(TextureDict["ButtonSelected"]));
     }
     /// <summary>
     /// Returns the colour array of the full button texture when provided a template
@@ -113,21 +117,35 @@ public class Button
     /// <param name="spriteBatch">The SpriteBatch to draw the button to.</param>
     public void Draw(SpriteBatch spriteBatch, MouseState mouseState)
     {
-        if (rectangle.Contains(mouseState.Position))
-        {
-            if (mouseState.LeftButton == ButtonState.Pressed)
+        if (Enabled)
+        { 
+            if (rectangle.Contains(mouseState.Position))
             {
-                spriteBatch.Draw(PressedTexture, rectangle.Location.ToVector2());
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    spriteBatch.Draw(PressedTexture, rectangle.Location.ToVector2());
+                }
+                else
+                {
+                    spriteBatch.Draw(HoverTexture, rectangle.Location.ToVector2());
+                }
+
             }
             else
             {
-                spriteBatch.Draw(HoverTexture, rectangle.Location.ToVector2());
+                if (Selected)
+                {
+                    spriteBatch.Draw(SelectedTexture, rectangle.Location.ToVector2());//MB: Draws the background
+                }
+                else
+                {
+                    spriteBatch.Draw(ButtonTexture, rectangle.Location.ToVector2());//MB: Draws the background
+                }
             }
-
         }
         else
         {
-            spriteBatch.Draw(ButtonTexture, rectangle.Location.ToVector2());//MB: Draws the background
+            spriteBatch.Draw(DisabledTexture, rectangle.Location.ToVector2());
         }
         float width = ButtonFont.MeasureString(Text).X;//MB: Gets the width of the text
         float height = ButtonFont.MeasureString(Text).Y;//MB: Gets the height of the text
