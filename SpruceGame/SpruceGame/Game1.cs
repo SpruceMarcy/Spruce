@@ -81,6 +81,7 @@ namespace SpruceGame
             Textures.Add("ButtonPressed", Content.Load<Texture2D>("ButtonPressed"));
             Textures.Add("ButtonHover", Content.Load<Texture2D>("ButtonHover"));
             Textures.Add("ButtonDisabled", Content.Load<Texture2D>("ButtonDisabled"));
+            Textures.Add("ButtonSelected", Content.Load<Texture2D>("ButtonSelected"));
             Textures.Add("Background", Content.Load<Texture2D>("Background"));
 
             MainFont=Content.Load<SpriteFont>("MainFont");
