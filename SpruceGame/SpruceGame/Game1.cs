@@ -31,8 +31,10 @@ namespace SpruceGame
         SpriteFont MainFont;//MB: This variable holds the font to be used. Only applies to buttons as of 16/07/18
         SpriteFont InputFont;//MB: A monospaced font
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
+        SaveGame LoadedGame;
         MouseState PreviousMouseState;
-        Button[] MenuButtons;//MB: The array of buttons on the main menu.
+        Dictionary<string,Button> MenuButtons;//MB: The array of buttons on the main menu.
+
         Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
         //---------------------------------------------------------------------
 
@@ -122,13 +124,13 @@ namespace SpruceGame
 	        	case GameState.MainMenu:
                     if (PreviousMouseState.LeftButton==ButtonState.Pressed && mouseState.LeftButton==ButtonState.Released) //MB: if mousedown
                     {
-                        if (MenuButtons[3].ClickCheck(mouseState.Position))//MB: If exit button clicked
+                        if (MenuButtons["MainMenuExit"].ClickCheck(mouseState.Position))//MB: If exit button clicked
                             Exit();
-                        if (MenuButtons[0].ClickCheck(mouseState.Position))//MB: If new game button clicked
+                        if (MenuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked
                             GameState =GameState.NewGame;
-                        if (MenuButtons[1].ClickCheck(mouseState.Position))//MB: If load game button clicked
+                        if (MenuButtons["MainMenuLoadGame"].ClickCheck(mouseState.Position))//MB: If load game button clicked
                             GameState = GameState.LoadGame;
-                        if (MenuButtons[2].ClickCheck(mouseState.Position))//MB: If options button clicked
+                        if (MenuButtons["MainMenuOptions"].ClickCheck(mouseState.Position))//MB: If options button clicked
                             GameState = GameState.Options;
                     }
                     break;//MB: This stops the thread running into the next case. Came with the switch.
@@ -160,9 +162,9 @@ namespace SpruceGame
 	        {
 	        	case GameState.MainMenu:
                     spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));//MB: Draws the background
-                    foreach (Button button in MenuButtons) //MB: Draws the buttons
+                    foreach (string ButtonName in new string[] {"MainMenuNewGame","MainMenuLoadGame", "MainMenuOptions", "MainMenuExit" }) //MB: Draws the buttons
                    	{
-                        button.Draw(spriteBatch, Mouse.GetState());
+                        MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
 	                }
                     Window.Title=(gameTime.TotalGameTime.ToString() + " - " + 1/(gameTime.ElapsedGameTime.TotalSeconds) + "FPS");//MB: for debugging; shows game duration and fps in the title
                     break;//MB: This stops the thread running into the next case. Came with the switch.
@@ -188,13 +190,13 @@ namespace SpruceGame
         /// </summary>
         /// <param name="CentreScreen">The coordinates of the middle of the screen.</param>
         /// <returns>Array of buttons</returns>
-        private Button[] GenerateMenuButtons(Vector2 CentreScreen)
+        private Dictionary<string,Button> GenerateMenuButtons(Vector2 CentreScreen)
         {
-            Button[] MenuButtons = new Button[4];
-            MenuButtons[0]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-191,256,82),"New Game",GraphicsDevice,Textures,MainFont);
-            MenuButtons[1]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-91,256,82),"Load Game",GraphicsDevice,Textures,MainFont);
-            MenuButtons[2]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+9,256,82),"Options",GraphicsDevice,Textures,MainFont);
-            MenuButtons[3]=new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+109,256,82),"Exit",GraphicsDevice,Textures,MainFont);
+            Dictionary<string,Button> MenuButtons = new Dictionary<string, Button>();
+            MenuButtons.Add("MainMenuNewGame",new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-191,256,82),"New Game",GraphicsDevice,Textures,MainFont));
+            MenuButtons.Add("MainMenuLoadGame", new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-91,256,82),"Load Game",GraphicsDevice,Textures,MainFont));
+            MenuButtons.Add("MainMenuOptions", new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+9,256,82),"Options",GraphicsDevice,Textures,MainFont));
+            MenuButtons.Add("MainMenuExit", new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+109,256,82),"Exit",GraphicsDevice,Textures,MainFont));
             return MenuButtons;
         }
     }
