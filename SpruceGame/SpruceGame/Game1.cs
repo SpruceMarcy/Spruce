@@ -15,8 +15,8 @@ namespace SpruceGame
         MainMenu = 0,
         NewGame = 1,
         InGame = 2,
-        LoadGame=3,
-        Options=4
+        LoadGame = 3,
+        Options = 4
     }
     /// <summary>
     /// This is the main type for your game.
@@ -33,7 +33,8 @@ namespace SpruceGame
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
         SaveGame LoadedGame;
         MouseState PreviousMouseState;
-        Dictionary<string,Button> MenuButtons;//MB: The array of buttons on the main menu.
+        Dictionary<string, Button> MenuButtons;//MB: The array of buttons on the main menu.
+        Textbox SeedBox;
 
         Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
         //---------------------------------------------------------------------
@@ -62,8 +63,9 @@ namespace SpruceGame
             //graphics.ToggleFullScreen();//MB: IF YOU CRASH IN FULL SCREEN YOU DIE IN REAL LIFE
             graphics.ApplyChanges();//MB: Updates the screen size
             GameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
-            MenuButtons=GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth/2,graphics.PreferredBackBufferHeight/2));//MB: Instanciates all the menu buttons
-            PreviousMouseState=Mouse.GetState();
+            MenuButtons = GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2));//MB: Instanciates all the menu buttons
+            SeedBox = new Textbox("",6,new Point(930,500),GraphicsDevice,Color.Green,InputFont);
+            PreviousMouseState = Mouse.GetState();
             //----------------------------------------------------------------------------------------
         }
 
@@ -79,14 +81,14 @@ namespace SpruceGame
 
             //--------MB: Load all the textures here--------
             Textures.Add("Cursor", Content.Load<Texture2D>("Cursor"));
-            Textures.Add("ButtonUnpressed",Content.Load<Texture2D>("ButtonUnpressed"));
+            Textures.Add("ButtonUnpressed", Content.Load<Texture2D>("ButtonUnpressed"));
             Textures.Add("ButtonPressed", Content.Load<Texture2D>("ButtonPressed"));
             Textures.Add("ButtonHover", Content.Load<Texture2D>("ButtonHover"));
             Textures.Add("ButtonDisabled", Content.Load<Texture2D>("ButtonDisabled"));
             Textures.Add("ButtonSelected", Content.Load<Texture2D>("ButtonSelected"));
             Textures.Add("Background", Content.Load<Texture2D>("Background"));
 
-            MainFont=Content.Load<SpriteFont>("MainFont");
+            MainFont = Content.Load<SpriteFont>("MainFont");
             InputFont = Content.Load<SpriteFont>("Monospace");
 
             //---------------------------------------------
@@ -120,14 +122,14 @@ namespace SpruceGame
             KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
             switch (GameState)//MB: This is where State-Dependent game logic goes
-	        {
-	        	case GameState.MainMenu:
-                    if (PreviousMouseState.LeftButton==ButtonState.Pressed && mouseState.LeftButton==ButtonState.Released) //MB: if mousedown
+            {
+                case GameState.MainMenu:
+                    if (PreviousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released) //MB: if mousedown
                     {
                         if (MenuButtons["MainMenuExit"].ClickCheck(mouseState.Position))//MB: If exit button clicked
                             Exit();
                         if (MenuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked
-                            GameState =GameState.NewGame;
+                            GameState = GameState.NewGame;
                         if (MenuButtons["MainMenuLoadGame"].ClickCheck(mouseState.Position))//MB: If load game button clicked
                             GameState = GameState.LoadGame;
                         if (MenuButtons["MainMenuOptions"].ClickCheck(mouseState.Position))//MB: If options button clicked
@@ -135,6 +137,17 @@ namespace SpruceGame
                     }
                     break;//MB: This stops the thread running into the next case. Came with the switch.
                 case GameState.NewGame:
+                    if (PreviousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released) //MB: if mousedown
+                    {
+                        if (MenuButtons["NewGameStart"].ClickCheck(mouseState.Position))//MB: If start button clicked
+                        {
+                            LoadedGame = new SaveGame(new byte[] { });
+                            GameState = GameState.InGame;
+                        }
+                        if (MenuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
+                            GameState = GameState.MainMenu;
+                    }
+                    SeedBox.Update(keyboardState, mouseState);
                     break;
                 case GameState.InGame:
                     break;
@@ -144,9 +157,9 @@ namespace SpruceGame
                     break;
                 default:
                     throw new System.NotImplementedException("Invalid GameState");//MB: This should never run, which is why it'd throw an error
-        	}
+            }
             base.Update(gameTime);//Monogame
-            PreviousMouseState=mouseState;
+            PreviousMouseState = mouseState;
         }
 
         /// <summary>
@@ -159,16 +172,22 @@ namespace SpruceGame
 
             spriteBatch.Begin();//MB: Allows drawing
             switch (GameState)//MB: This is where State-Dependent screen updating goes
-	        {
-	        	case GameState.MainMenu:
+            {
+                case GameState.MainMenu:
                     spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));//MB: Draws the background
-                    foreach (string ButtonName in new string[] {"MainMenuNewGame","MainMenuLoadGame", "MainMenuOptions", "MainMenuExit" }) //MB: Draws the buttons
-                   	{
+                    foreach (string ButtonName in new string[] { "MainMenuNewGame", "MainMenuLoadGame", "MainMenuOptions", "MainMenuExit" }) //MB: Draws the buttons
+                    {
                         MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
-	                }
-                    Window.Title=(gameTime.TotalGameTime.ToString() + " - " + 1/(gameTime.ElapsedGameTime.TotalSeconds) + "FPS");//MB: for debugging; shows game duration and fps in the title
+                    }
+                    Window.Title = (gameTime.TotalGameTime.ToString() + " - " + 1 / (gameTime.ElapsedGameTime.TotalSeconds) + "FPS");//MB: for debugging; shows game duration and fps in the title
                     break;//MB: This stops the thread running into the next case. Came with the switch.
                 case GameState.NewGame:
+                    spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));//MB: Draws the background
+                    foreach (string ButtonName in new string[] { "NewGameStart", "NewGameBack" }) //MB: Draws the buttons
+                    {
+                        MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
+                    }
+                    SeedBox.Draw(spriteBatch);
                     break;
                 case GameState.InGame:
                     break;
@@ -178,8 +197,8 @@ namespace SpruceGame
                     break;
                 default:
                     throw new System.NotImplementedException("Invalid GameState");//MB: This should never run, which is why it'd throw an error
-        	}
-            spriteBatch.Draw(Textures["Cursor"],new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y));//MB: Draws the cursor at the mouse
+            }
+            spriteBatch.Draw(Textures["Cursor"], new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y));//MB: Draws the cursor at the mouse
 
             spriteBatch.End();//MB: Drawing not allowed after this
             base.Draw(gameTime);//Monogame
@@ -190,13 +209,17 @@ namespace SpruceGame
         /// </summary>
         /// <param name="CentreScreen">The coordinates of the middle of the screen.</param>
         /// <returns>Array of buttons</returns>
-        private Dictionary<string,Button> GenerateMenuButtons(Vector2 CentreScreen)
+        private Dictionary<string, Button> GenerateMenuButtons(Vector2 CentreScreen)
         {
-            Dictionary<string,Button> MenuButtons = new Dictionary<string, Button>();
-            MenuButtons.Add("MainMenuNewGame",new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-191,256,82),"New Game",GraphicsDevice,Textures,MainFont));
-            MenuButtons.Add("MainMenuLoadGame", new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y-91,256,82),"Load Game",GraphicsDevice,Textures,MainFont));
-            MenuButtons.Add("MainMenuOptions", new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+9,256,82),"Options",GraphicsDevice,Textures,MainFont));
-            MenuButtons.Add("MainMenuExit", new Button(new Rectangle((int)CentreScreen.X-128,(int)CentreScreen.Y+109,256,82),"Exit",GraphicsDevice,Textures,MainFont));
+            Dictionary<string, Button> MenuButtons = new Dictionary<string, Button>
+            {
+                { "MainMenuNewGame", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y - 191, 256, 82), "New Game", GraphicsDevice, Textures, MainFont) },
+                { "MainMenuLoadGame", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y - 91, 256, 82), "Load Game", GraphicsDevice, Textures, MainFont) },
+                { "MainMenuOptions", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 9, 256, 82), "Options", GraphicsDevice, Textures, MainFont) },
+                { "MainMenuExit", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Exit", GraphicsDevice, Textures, MainFont) },
+                { "NewGameStart", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 9, 256, 82), "Start", GraphicsDevice, Textures, MainFont) },
+                { "NewGameBack", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Back", GraphicsDevice, Textures, MainFont) }
+            };
             return MenuButtons;
         }
     }
