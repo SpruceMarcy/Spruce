@@ -383,7 +383,7 @@ namespace SpruceGame
         /// 
         /// </summary>
         /// <param name="spriteBatch">The SpriteBatch to draw the button to.</param>
-        public void Draw(SpriteBatch spriteBatch, MouseState mouseState)
+        public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, rectangle.Location.ToVector2());
             spriteBatch.DrawString(TextFont, Text, new Vector2(rectangle.X + 1, rectangle.Y + 1), Color.Black);
