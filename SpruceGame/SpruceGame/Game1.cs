@@ -65,7 +65,7 @@ namespace SpruceGame
             graphics.ApplyChanges();//MB: Updates the screen size
             GameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
             MenuButtons = GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2));//MB: Instanciates all the menu buttons
-            SeedBox = new Textbox("",6,new Point(930,500),GraphicsDevice,Color.Green,InputFont);
+            SeedBox = new Textbox("", 6, new Point(930, 500), GraphicsDevice, Color.Green, InputFont);
             PreviousMouseState = Mouse.GetState();
             //----------------------------------------------------------------------------------------
         }
@@ -142,7 +142,17 @@ namespace SpruceGame
                     {
                         if (MenuButtons["NewGameStart"].ClickCheck(mouseState.Position))//MB: If start button clicked
                         {
-                            LoadedGame = new SaveGame(new byte[] { });
+                            if (SeedBox.Text.Length % 2 != 0)
+                            {
+                                SeedBox.Text = SeedBox.Text + "0";
+                            }
+                            byte[] bytearray = new byte[SeedBox.Text.Length / 2];
+                            for (int i = 0; i < bytearray.Length; i++)
+                            {
+                                bytearray[i] = (byte)((HexCharToByte(SeedBox.Text[2 * i]) * 16) + HexCharToByte(SeedBox.Text[(2 * i) + 1]));
+                            }
+                            LoadedGame = new SaveGame(bytearray);
+                            Window.Title =bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();
                             GameState = GameState.InGame;
                         }
                         if (MenuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
@@ -225,6 +235,47 @@ namespace SpruceGame
                 { "NewGameBack", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Back", GraphicsDevice, Textures, MainFont) }
             };
             return MenuButtons;
+        }
+        private byte HexCharToByte(char HexChar)
+        {
+            switch (HexChar)
+            {
+                case '0':
+                    return 0;
+                case '1':
+                    return 1;
+                case '2':
+                    return 2;
+                case '3':
+                    return 3;
+                case '4':
+                    return 4;
+                case '5':
+                    return 5;
+                case '6':
+                    return 6;
+                case '7':
+                    return 7;
+                case '8':
+                    return 8;
+                case '9':
+                    return 9;
+                case 'A':
+                    return 10;
+                case 'B':
+                    return 11;
+                case 'C':
+                    return 12;
+                case 'D':
+                    return 13;
+                case 'E':
+                    return 14;
+                case 'F':
+                    return 15;
+                default:
+                    break;
+            }
+            return 0;
         }
     }
 }
