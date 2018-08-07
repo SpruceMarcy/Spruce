@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
+using System.Text.RegularExpressions;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
@@ -148,8 +149,10 @@ namespace SpruceGame
                             GameState = GameState.MainMenu;
                     }
                     SeedBox.Update(keyboardState, mouseState);
+                    MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);
                     break;
                 case GameState.InGame:
+                    LoadedGame.Update();
                     break;
                 case GameState.LoadGame:
                     break;
@@ -190,6 +193,7 @@ namespace SpruceGame
                     SeedBox.Draw(spriteBatch);
                     break;
                 case GameState.InGame:
+                    LoadedGame.Draw(spriteBatch);
                     break;
                 case GameState.LoadGame:
                     break;
