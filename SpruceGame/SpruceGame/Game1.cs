@@ -78,16 +78,28 @@ namespace SpruceGame
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);//Monogame: Create a new SpriteBatch, which can be used to draw textures.
-            Textures = new Dictionary<string, Texture2D>();//MB: Initializes the texture dictionary
+            Textures = new Dictionary<string, Texture2D>
+            {
+                //--------MB: Load all the textures here--------
+                { "Cursor", Content.Load<Texture2D>("Cursor") },
+                { "ButtonUnpressed", Content.Load<Texture2D>("ButtonUnpressed") },
+                { "ButtonPressed", Content.Load<Texture2D>("ButtonPressed") },
+                { "ButtonHover", Content.Load<Texture2D>("ButtonHover") },
+                { "ButtonDisabled", Content.Load<Texture2D>("ButtonDisabled") },
+                { "ButtonSelected", Content.Load<Texture2D>("ButtonSelected") },
+                { "Background", Content.Load<Texture2D>("Background") },
+                { "WallTopLeft", Content.Load<Texture2D>("WallTopLeft") },
+                { "WallTop", Content.Load<Texture2D>("WallTop") },
+                { "WallTopRight", Content.Load<Texture2D>("WallTopRight") },
+                { "WallRight", Content.Load<Texture2D>("WallRight") },
+                { "WallBottomRight", Content.Load<Texture2D>("WallBottomRight") },
+                { "WallBottom", Content.Load<Texture2D>("WallBottom") },
+                { "WallBottomLeft", Content.Load<Texture2D>("WallBottomLeft") },
+                { "WallLeft", Content.Load<Texture2D>("WallLeft") },
+                { "WallMiddle", Content.Load<Texture2D>("WallMiddle") },
+                { "Player",Content.Load<Texture2D>("PlayerTemp")}
+            };//MB: Initializes the texture dictionary
 
-            //--------MB: Load all the textures here--------
-            Textures.Add("Cursor", Content.Load<Texture2D>("Cursor"));
-            Textures.Add("ButtonUnpressed", Content.Load<Texture2D>("ButtonUnpressed"));
-            Textures.Add("ButtonPressed", Content.Load<Texture2D>("ButtonPressed"));
-            Textures.Add("ButtonHover", Content.Load<Texture2D>("ButtonHover"));
-            Textures.Add("ButtonDisabled", Content.Load<Texture2D>("ButtonDisabled"));
-            Textures.Add("ButtonSelected", Content.Load<Texture2D>("ButtonSelected"));
-            Textures.Add("Background", Content.Load<Texture2D>("Background"));
 
             MainFont = Content.Load<SpriteFont>("MainFont");
             InputFont = Content.Load<SpriteFont>("Monospace");
@@ -151,8 +163,8 @@ namespace SpruceGame
                             {
                                 bytearray[i] = (byte)((HexCharToByte(SeedBox.Text[2 * i]) * 16) + HexCharToByte(SeedBox.Text[(2 * i) + 1]));
                             }
-                            LoadedGame = new SaveGame(bytearray);
-                            Window.Title =bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();
+                            LoadedGame = new SaveGame(bytearray, Textures);
+                            Window.Title = bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();
                             GameState = GameState.InGame;
                         }
                         if (MenuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
@@ -162,7 +174,7 @@ namespace SpruceGame
                     MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);
                     break;
                 case GameState.InGame:
-                    LoadedGame.Update();
+                    LoadedGame.Update(keyboardState);
                     break;
                 case GameState.LoadGame:
                     break;
@@ -181,7 +193,7 @@ namespace SpruceGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);//MB: Clears the frame with blue
+            GraphicsDevice.Clear(Color.Black);//MB: Clears the frame with blue
 
             spriteBatch.Begin();//MB: Allows drawing
             switch (GameState)//MB: This is where State-Dependent screen updating goes
