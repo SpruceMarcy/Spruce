@@ -14,5 +14,14 @@
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonPressed.png</File>
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/Monospace.spritefont</File>
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ButtonSelected.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallBottom.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallBottomLeft.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallBottomRight.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallLeft.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallMiddle.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallRight.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallTop.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallTopLeft.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallTopRight.png</File>
   </SourceFiles>
 </SourceFileCollection>
