@@ -154,7 +154,7 @@ namespace SpruceGame
                     {
                         if (MenuButtons["NewGameStart"].ClickCheck(mouseState.Position))//MB: If start button clicked
                         {
-                            if (SeedBox.Text.Length % 2 != 0)
+                            while (SeedBox.Text.Length<6)
                             {
                                 SeedBox.Text = SeedBox.Text + "0";
                             }
