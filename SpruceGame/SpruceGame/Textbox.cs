@@ -386,7 +386,12 @@ namespace SpruceGame
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, rectangle.Location.ToVector2());
-            spriteBatch.DrawString(TextFont, Text, new Vector2(rectangle.X + 1, rectangle.Y + 1), Color.Black);
+            string DisplayText = Text;
+            if (Text.Length<CharLimit && Selected)
+            {
+                DisplayText += '_';
+            }
+            spriteBatch.DrawString(TextFont, DisplayText, new Vector2(rectangle.X + 1, rectangle.Y + 1), Color.Black);
         }
     }
 }
