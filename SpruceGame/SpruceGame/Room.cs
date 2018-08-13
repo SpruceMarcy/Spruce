@@ -10,7 +10,7 @@ namespace SpruceGame
     public class Tile
     {
         // - - - - Variables Global to this tile
-        bool isSolid;
+        public bool isSolid;
         Texture2D texture;
         // - - - - - - - - - - - - - - - - - - -
         public Tile(Texture2D texture, bool isSolid)
@@ -26,7 +26,7 @@ namespace SpruceGame
     public class Room
     {
         // - - - - Variables Global to this Room
-        Tile[,] tiles;
+        public Tile[,] tiles;
         int width;
         int height;
 
@@ -60,7 +60,7 @@ namespace SpruceGame
             {
                 for (int x = 1; x < width - 1; x++)
                 {
-                    tiles[x, y] = new Tile(TextureDict["WallMiddle"], true);
+                    tiles[x, y] = new Tile(TextureDict["WallMiddle"], false);
                 }
             }
         }

@@ -11,7 +11,7 @@ namespace SpruceGame
     {
         // - - - - Variables Global to this Level
         readonly string LevelName;
-        Room[,] rooms;
+        public Room[,] rooms;
         int width;
         int height;
 
