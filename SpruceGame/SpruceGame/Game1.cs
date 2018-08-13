@@ -65,7 +65,7 @@ namespace SpruceGame
             graphics.ApplyChanges();//MB: Updates the screen size
             GameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
             MenuButtons = GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2));//MB: Instanciates all the menu buttons
-            SeedBox = new Textbox("", 6, new Point(930, 500), GraphicsDevice, Color.Green, InputFont);
+            SeedBox = new Textbox("", 6, new Point(910, 500), GraphicsDevice, Color.Green, InputFont);
             PreviousMouseState = Mouse.GetState();
             //----------------------------------------------------------------------------------------
         }
@@ -169,6 +169,8 @@ namespace SpruceGame
                         }
                         if (MenuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
                             GameState = GameState.MainMenu;
+                        if (MenuButtons["NewGameRandom"].ClickCheck(mouseState.Position))
+                            SeedBox.Text="000000";
                     }
                     SeedBox.Update(keyboardState, mouseState);
                     MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);
@@ -208,7 +210,7 @@ namespace SpruceGame
                     break;//MB: This stops the thread running into the next case. Came with the switch.
                 case GameState.NewGame:
                     spriteBatch.Draw(Textures["Background"], new Vector2(0, 0));//MB: Draws the background
-                    foreach (string ButtonName in new string[] { "NewGameStart", "NewGameBack" }) //MB: Draws the buttons
+                    foreach (string ButtonName in new string[] { "NewGameStart", "NewGameBack","NewGameRandom" }) //MB: Draws the buttons
                     {
                         MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
                     }
@@ -244,7 +246,8 @@ namespace SpruceGame
                 { "MainMenuOptions", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 9, 256, 82), "Options", GraphicsDevice, Textures, MainFont) },
                 { "MainMenuExit", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Exit", GraphicsDevice, Textures, MainFont) },
                 { "NewGameStart", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 9, 256, 82), "Start", GraphicsDevice, Textures, MainFont) },
-                { "NewGameBack", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Back", GraphicsDevice, Textures, MainFont) }
+                { "NewGameBack", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Back", GraphicsDevice, Textures, MainFont) },
+                { "NewGameRandom", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y -141, 256, 82), "Random Seed", GraphicsDevice, Textures, MainFont) }
             };
             return MenuButtons;
         }
