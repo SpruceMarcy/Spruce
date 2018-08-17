@@ -17,11 +17,11 @@ namespace SpruceGame
         int height;
 
         // - - - - - - - - - - - - - - - - - - -
-        public Level(int width, int height, Dictionary<string, Texture2D> TextureDict)
+        public Level(int width, int height, Dictionary<string, Texture2D> TextureDict,byte[] seed,int RoomCount)
         {
             this.width = width;
             this.height = height;
-            rooms = GenerateLabyrinth(15,new Vector2(5,5),new Vector2(0,0),TextureDict);
+            rooms = GenerateLabyrinth(RoomCount,new Vector2(5,5),new Vector2(0,0),TextureDict,seed);
         }
         public void draw(SpriteBatch spriteBatch, Vector2 Position)
         {
@@ -36,7 +36,7 @@ namespace SpruceGame
                 }
             }
         }
-        private Room[,] GenerateLabyrinth(int MaxRoomCount, Vector2 Dimensions, Vector2 StartRoom,Dictionary<string,Texture2D> TextureDict)
+        private Room[,] GenerateLabyrinth(int MaxRoomCount, Vector2 Dimensions, Vector2 StartRoom,Dictionary<string,Texture2D> TextureDict,byte[] seed)
         {
             int RoomCount=1;
             Node[,] WeightMatrix = new Node[(int)Dimensions.X, (int)Dimensions.Y];
@@ -56,7 +56,7 @@ namespace SpruceGame
                     }
                     if (x < Dimensions.X - 1)
                     {
-                        WeightMatrix[x, y].East = (uint)new Random(x+y).Next(1, 101);
+                        WeightMatrix[x, y].East = (uint)new Random(x + y+ seed[0]<<16+seed[1]<<8+seed[2]).Next(1, 101);
                     }
                     else
                     {

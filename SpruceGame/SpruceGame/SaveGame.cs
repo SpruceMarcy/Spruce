@@ -21,7 +21,7 @@ namespace SpruceGame
         public SaveGame(byte[] Seed,Dictionary<string,Texture2D> TextureDict) //sub new
         {
             this.Seed = Seed;
-            LoadedLevel = new Level(5,5,TextureDict);
+            LoadedLevel = new Level(5,5,TextureDict,Seed,15);
             PlayerPos = new Vector2(300, 300);
             PlayerTexture = TextureDict["Player"];
         }
