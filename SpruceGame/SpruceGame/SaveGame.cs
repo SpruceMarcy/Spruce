@@ -48,7 +48,7 @@ namespace SpruceGame
             if (movementVector!=Vector2.Zero)
             {
                 movementVector /= movementVector.Length();//makes it a unit vector
-                movementVector =movementVector+movementVector/2;
+                movementVector = movementVector + movementVector;///2;
             }
             if (!isSolid(PlayerPos+movementVector))
             {
