@@ -31,7 +31,7 @@ namespace SpruceGame
         int height;
 
         // - - - - - - - - - - - - - - - - - - -
-        public Room(int width, int height,Dictionary<string,Texture2D> TextureDict)
+        public Room(int width, int height,Dictionary<string,Texture2D> TextureDict,byte DoorProfile)
         {
             this.width = width;
             this.height = height;
@@ -62,6 +62,22 @@ namespace SpruceGame
                 {
                     tiles[x, y] = new Tile(TextureDict["WallMiddle"], false);
                 }
+            }
+            if ((DoorProfile & 0b1) == 0b1)
+            {
+                tiles[width / 2, 0] = new Tile(TextureDict["WallMiddle"], false);
+            }
+            if ((DoorProfile & 0b10) == 0b10)
+            {
+                tiles[0, height/2] = new Tile(TextureDict["WallMiddle"], false);
+            }
+            if ((DoorProfile & 0b100) == 0b100)
+            {
+                tiles[width / 2, height-1] = new Tile(TextureDict["WallMiddle"], false);
+            }
+            if ((DoorProfile & 0b1000) == 0b1000)
+            {
+                tiles[width-1, height / 2] = new Tile(TextureDict["WallMiddle"], false);
             }
         }
         public void draw(SpriteBatch spriteBatch, Vector2 position)
