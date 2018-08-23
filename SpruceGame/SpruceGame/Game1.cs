@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
 using System.Text.RegularExpressions;
+using static SpruceGame.GlobalMethods;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
@@ -16,8 +17,9 @@ namespace SpruceGame
         MainMenu = 0,
         NewGame = 1,
         InGame = 2,
-        LoadGame = 3,
-        Options = 4
+        PausedInGame = 3,
+        LoadGame = 4,
+        Options = 5
     }
     /// <summary>
     /// This is the main type for your game.
@@ -34,6 +36,7 @@ namespace SpruceGame
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
         SaveGame LoadedGame;
         MouseState PreviousMouseState;
+        KeyboardState PreviousKeyboardState;
         Dictionary<string, Button> MenuButtons;//MB: The array of buttons on the main menu.
         Textbox SeedBox;
 
@@ -67,6 +70,7 @@ namespace SpruceGame
             MenuButtons = GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2));//MB: Instanciates all the menu buttons
             SeedBox = new Textbox("", 6, new Point(910, 500), GraphicsDevice, Color.Green, InputFont);
             PreviousMouseState = Mouse.GetState();
+            PreviousKeyboardState = Keyboard.GetState();
             //----------------------------------------------------------------------------------------
         }
 
@@ -87,6 +91,7 @@ namespace SpruceGame
                 { "ButtonHover", Content.Load<Texture2D>("ButtonHover") },
                 { "ButtonDisabled", Content.Load<Texture2D>("ButtonDisabled") },
                 { "ButtonSelected", Content.Load<Texture2D>("ButtonSelected") },
+                { "MenuTemplate", Content.Load<Texture2D>("MenuTemplate") },
                 { "Background", Content.Load<Texture2D>("Background") },
                 { "WallTopLeft", Content.Load<Texture2D>("WallTopLeft") },
                 { "WallTop", Content.Load<Texture2D>("WallTop") },
@@ -129,7 +134,7 @@ namespace SpruceGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.F1))
                 Exit();//Monogame MB: This means you can press escape to exit
                        //MB: Potentially we could store the keyboard.GetState() in a variable so we don't have to keep calling it
             KeyboardState keyboardState = Keyboard.GetState();
@@ -176,7 +181,17 @@ namespace SpruceGame
                     MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);
                     break;
                 case GameState.InGame:
+                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))
+                    {
+                        GameState = GameState.PausedInGame;
+                    }
                     LoadedGame.Update(keyboardState);
+                    break;
+                case GameState.PausedInGame:
+                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))
+                    {
+                        GameState = GameState.InGame;
+                    }
                     break;
                 case GameState.LoadGame:
                     break;
@@ -187,6 +202,7 @@ namespace SpruceGame
             }
             base.Update(gameTime);//Monogame
             PreviousMouseState = mouseState;
+            PreviousKeyboardState = keyboardState;
         }
 
         /// <summary>
@@ -218,6 +234,14 @@ namespace SpruceGame
                     break;
                 case GameState.InGame:
                     LoadedGame.Draw(spriteBatch);
+                    break;
+                case GameState.PausedInGame:
+                    LoadedGame.Draw(spriteBatch);
+                    {
+                        Texture2D Back = new Texture2D(GraphicsDevice, 1000, 500);
+                        Back.SetData<Color>(GetRectangleDataFromTemplate(Textures["MenuTemplate"],new Rectangle(0,0,1000,500)));
+                        spriteBatch.Draw(Back, new Vector2(1000,500));
+                    }
                     break;
                 case GameState.LoadGame:
                     break;
@@ -251,47 +275,8 @@ namespace SpruceGame
             };
             return MenuButtons;
         }
-        private byte HexCharToByte(char HexChar)
-        {
-            switch (HexChar)
-            {
-                case '0':
-                    return 0;
-                case '1':
-                    return 1;
-                case '2':
-                    return 2;
-                case '3':
-                    return 3;
-                case '4':
-                    return 4;
-                case '5':
-                    return 5;
-                case '6':
-                    return 6;
-                case '7':
-                    return 7;
-                case '8':
-                    return 8;
-                case '9':
-                    return 9;
-                case 'A':
-                    return 10;
-                case 'B':
-                    return 11;
-                case 'C':
-                    return 12;
-                case 'D':
-                    return 13;
-                case 'E':
-                    return 14;
-                case 'F':
-                    return 15;
-                default:
-                    break;
-            }
-            return 0;
-        }
+        
+        
     }
 }
 #pragma warning restore CS0618

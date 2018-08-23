@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
+using static SpruceGame.GlobalMethods;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
@@ -41,77 +42,11 @@ namespace SpruceGame
             PressedTexture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
             DisabledTexture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
             SelectedTexture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
-            ButtonTexture.SetData(GetTextureData(TextureDict["ButtonUnpressed"]));//MB: Sets the actual texture to the locally generated texture
-            HoverTexture.SetData(GetTextureData(TextureDict["ButtonHover"]));
-            PressedTexture.SetData(GetTextureData(TextureDict["ButtonPressed"]));
-            DisabledTexture.SetData(GetTextureData(TextureDict["ButtonDisabled"]));
-            SelectedTexture.SetData(GetTextureData(TextureDict["ButtonSelected"]));
-        }
-        /// <summary>
-        /// Returns the colour array of the full button texture when provided a template
-        /// </summary>
-        /// <returns>Array of Color</returns>
-        private Color[] GetTextureData(Texture2D Template)
-        {
-            Color[] TextureData = new Color[rectangle.Width * rectangle.Height]; //MB: An array to hold the color values of the button texture.
-            Color[] TemplateData1D = new Color[Template.Width * Template.Height];//MB: An array to hold the color values of the template texture.
-            Template.GetData(TemplateData1D);//MB: Puts the template data in an array
-            Color[,] TemplateData2D = new Color[Template.Width, Template.Height];//MB: A 2D array to make accessing the color values easier.
-            {//MB: This indented section just formats TemplateData1D into TemplateData2D
-                int X = 0;
-                int Y = 0;
-                int TemplateWidth = Template.Width;
-                foreach (Color color in TemplateData1D)
-                {
-                    TemplateData2D[X, Y] = color;
-                    X++;
-                    if (X >= TemplateWidth)
-                    {
-                        X = 0;
-                        Y++;
-                    }
-                }
-            }
-            int BorderWidth = (Template.Width - 1) / 2;
-            int BorderHeight = (Template.Height - 1) / 2;
-            int Bottom = rectangle.Height - BorderHeight;
-            int Right = rectangle.Width - BorderWidth;
-            int TemplateX = 0;
-            int TemplateY = 0;
-            //MB: The following code assigns each pixel of the button the data from the corresponding template pixel.
-            //MB: This section is very susceptible to off-by-one errors. Please don't touch it unless necessary. 
-            for (int y = 0; y < rectangle.Height; y++)
-            {
-                for (int x = 0; x < rectangle.Width; x++)
-                {
-                    TemplateX = x;
-                    if (TemplateX > BorderWidth)
-                    {
-                        if (TemplateX > Right - 1)
-                        {
-                            TemplateX = x - Right + BorderWidth + 1;
-                        }
-                        else
-                        {
-                            TemplateX = BorderWidth;
-                        }
-                    }
-                    TemplateY = y;
-                    if (TemplateY > BorderHeight)
-                    {
-                        if (TemplateY > Bottom - 1)
-                        {
-                            TemplateY = y - Bottom + BorderHeight + 1;
-                        }
-                        else
-                        {
-                            TemplateY = BorderHeight;
-                        }
-                    }
-                    TextureData[y * rectangle.Width + x] = TemplateData2D[TemplateX, TemplateY];
-                }
-            }
-            return TextureData;
+            ButtonTexture.SetData(GetRectangleDataFromTemplate(TextureDict["ButtonUnpressed"],rectangle));//MB: Sets the actual texture to the locally generated texture
+            HoverTexture.SetData(GetRectangleDataFromTemplate(TextureDict["ButtonHover"], rectangle));
+            PressedTexture.SetData(GetRectangleDataFromTemplate(TextureDict["ButtonPressed"], rectangle));
+            DisabledTexture.SetData(GetRectangleDataFromTemplate(TextureDict["ButtonDisabled"], rectangle));
+            SelectedTexture.SetData(GetRectangleDataFromTemplate(TextureDict["ButtonSelected"], rectangle));
         }
         /// <summary>
         /// Draws the button texture and text to a given SpriteBatch
