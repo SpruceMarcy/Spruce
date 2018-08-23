@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
 using System.Text.RegularExpressions;
+using static SpruceGame.GlobalMethods;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
@@ -16,8 +17,9 @@ namespace SpruceGame
         MainMenu = 0,
         NewGame = 1,
         InGame = 2,
-        LoadGame = 3,
-        Options = 4
+        PausedInGame = 3,
+        LoadGame = 4,
+        Options = 5
     }
     /// <summary>
     /// This is the main type for your game.
@@ -32,8 +34,10 @@ namespace SpruceGame
         SpriteFont MainFont;//MB: This variable holds the font to be used. Only applies to buttons as of 16/07/18
         SpriteFont InputFont;//MB: A monospaced font
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
+        Vector2 ScreenSize;
         SaveGame LoadedGame;
         MouseState PreviousMouseState;
+        KeyboardState PreviousKeyboardState;
         Dictionary<string, Button> MenuButtons;//MB: The array of buttons on the main menu.
         Textbox SeedBox;
 
@@ -45,6 +49,7 @@ namespace SpruceGame
             //MB: don't know when this is called; best not touch it
             graphics = new GraphicsDeviceManager(this);//Monogame
             Content.RootDirectory = "Content";//Monogame
+            ScreenSize = new Vector2(1920, 1080);//new Vector2(720, 480);//
         }
 
         /// <summary>
@@ -59,14 +64,15 @@ namespace SpruceGame
             base.Initialize();//Monogame
 
             //--------MB: Do anything that happens at startup here that doesn't involve loading--------
-            graphics.PreferredBackBufferHeight = 1080;//MB: Window Height
-            graphics.PreferredBackBufferWidth = 1920;//MB: Window Width
+            graphics.PreferredBackBufferHeight = (int)ScreenSize.Y;//MB: Window Height
+            graphics.PreferredBackBufferWidth = (int)ScreenSize.X;//MB: Window Width
             //graphics.ToggleFullScreen();//MB: IF YOU CRASH IN FULL SCREEN YOU DIE IN REAL LIFE
             graphics.ApplyChanges();//MB: Updates the screen size
             GameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
-            MenuButtons = GenerateMenuButtons(new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2));//MB: Instanciates all the menu buttons
+            MenuButtons = GenerateMenuButtons();//MB: Instanciates all the menu buttons
             SeedBox = new Textbox("", 6, new Point(910, 500), GraphicsDevice, Color.Green, InputFont);
             PreviousMouseState = Mouse.GetState();
+            PreviousKeyboardState = Keyboard.GetState();
             //----------------------------------------------------------------------------------------
         }
 
@@ -97,9 +103,10 @@ namespace SpruceGame
                 { "WallBottomLeft", Content.Load<Texture2D>("WallBottomLeft") },
                 { "WallLeft", Content.Load<Texture2D>("WallLeft") },
                 { "WallMiddle", Content.Load<Texture2D>("WallMiddle") },
-                { "Player",Content.Load<Texture2D>("PlayerTemp")}
+                { "Player",Content.Load<Texture2D>("PlayerTemp")},
+                { "PauseMenu",new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(524f/27f))}
             };//MB: Initializes the texture dictionary
-
+            Textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(Content.Load<Texture2D>("MenuTemplate"),new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(524f / 27f))));
 
             MainFont = Content.Load<SpriteFont>("MainFont");
             InputFont = Content.Load<SpriteFont>("Monospace");
@@ -129,7 +136,7 @@ namespace SpruceGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.F1))
                 Exit();//Monogame MB: This means you can press escape to exit
                        //MB: Potentially we could store the keyboard.GetState() in a variable so we don't have to keep calling it
             KeyboardState keyboardState = Keyboard.GetState();
@@ -176,7 +183,28 @@ namespace SpruceGame
                     MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);
                     break;
                 case GameState.InGame:
+                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))
+                    {
+                        GameState = GameState.PausedInGame;
+                    }
                     LoadedGame.Update(keyboardState);
+                    break;
+                case GameState.PausedInGame:
+                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))
+                    {
+                        GameState = GameState.InGame;
+                    }
+                    if (PreviousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released) //MB: if mousedown
+                    {
+                        if (MenuButtons["PausedContinue"].ClickCheck(mouseState.Position))
+                        {
+                            GameState = GameState.InGame;
+                        }
+                        if (MenuButtons["PausedExit"].ClickCheck(mouseState.Position))
+                        {
+                            GameState = GameState.MainMenu;
+                        }
+                    }
                     break;
                 case GameState.LoadGame:
                     break;
@@ -187,6 +215,7 @@ namespace SpruceGame
             }
             base.Update(gameTime);//Monogame
             PreviousMouseState = mouseState;
+            PreviousKeyboardState = keyboardState;
         }
 
         /// <summary>
@@ -219,6 +248,14 @@ namespace SpruceGame
                 case GameState.InGame:
                     LoadedGame.Draw(spriteBatch);
                     break;
+                case GameState.PausedInGame:
+                    LoadedGame.Draw(spriteBatch);
+                    spriteBatch.Draw(Textures["PauseMenu"], new Vector2(PercentToX(124f/3f),PercentToY(1088f/27f)));
+                    foreach (string ButtonName in new string[] { "PausedContinue", "PausedExit" }) //MB: Draws the buttons
+                    {
+                        MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
+                    }
+                    break;
                 case GameState.LoadGame:
                     break;
                 case GameState.Options:
@@ -237,60 +274,29 @@ namespace SpruceGame
         /// </summary>
         /// <param name="CentreScreen">The coordinates of the middle of the screen.</param>
         /// <returns>Array of buttons</returns>
-        private Dictionary<string, Button> GenerateMenuButtons(Vector2 CentreScreen)
+        private Dictionary<string, Button> GenerateMenuButtons()
         {
             Dictionary<string, Button> MenuButtons = new Dictionary<string, Button>
             {
-                { "MainMenuNewGame", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y - 191, 256, 82), "New Game", GraphicsDevice, Textures, MainFont) },
-                { "MainMenuLoadGame", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y - 91, 256, 82), "Load Game", GraphicsDevice, Textures, MainFont) },
-                { "MainMenuOptions", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 9, 256, 82), "Options", GraphicsDevice, Textures, MainFont) },
-                { "MainMenuExit", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Exit", GraphicsDevice, Textures, MainFont) },
-                { "NewGameStart", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 9, 256, 82), "Start", GraphicsDevice, Textures, MainFont) },
-                { "NewGameBack", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y + 109, 256, 82), "Back", GraphicsDevice, Textures, MainFont) },
-                { "NewGameRandom", new Button(new Rectangle((int)CentreScreen.X - 128, (int)CentreScreen.Y -141, 256, 82), "Random Seed", GraphicsDevice, Textures, MainFont) }
+                { "MainMenuNewGame", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(33), PercentToX(200f/15f), PercentToY(205f/27f)), "New Game", GraphicsDevice, Textures, MainFont) },
+                { "MainMenuLoadGame", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(42), PercentToX(200f/15f), PercentToY(205f/27f)), "Load Game", GraphicsDevice, Textures, MainFont) },
+                { "MainMenuOptions", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(51), PercentToX(200f/15f), PercentToY(205f/27f)), "Options", GraphicsDevice, Textures, MainFont) },
+                { "MainMenuExit", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(60), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit", GraphicsDevice, Textures, MainFont) },
+                { "NewGameStart", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(51), PercentToX(200f/15f), PercentToY(205f/27f)), "Start", GraphicsDevice, Textures, MainFont) },
+                { "NewGameBack", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(60), PercentToX(200f/15f), PercentToY(205f/27f)), "Back", GraphicsDevice, Textures, MainFont) },
+                { "NewGameRandom", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(37), PercentToX(200f/15f), PercentToY(205f/27f)), "Random Seed", GraphicsDevice, Textures, MainFont) },
+                { "PausedContinue", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(1126f/27f), PercentToX(200f/15f), PercentToY(205f/27f)), "Continue", GraphicsDevice, Textures, MainFont) },
+                { "PausedExit", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(1369f/27f), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit to menu", GraphicsDevice, Textures, MainFont) }
             };
             return MenuButtons;
         }
-        private byte HexCharToByte(char HexChar)
+        private int PercentToX(float percentage)
         {
-            switch (HexChar)
-            {
-                case '0':
-                    return 0;
-                case '1':
-                    return 1;
-                case '2':
-                    return 2;
-                case '3':
-                    return 3;
-                case '4':
-                    return 4;
-                case '5':
-                    return 5;
-                case '6':
-                    return 6;
-                case '7':
-                    return 7;
-                case '8':
-                    return 8;
-                case '9':
-                    return 9;
-                case 'A':
-                    return 10;
-                case 'B':
-                    return 11;
-                case 'C':
-                    return 12;
-                case 'D':
-                    return 13;
-                case 'E':
-                    return 14;
-                case 'F':
-                    return 15;
-                default:
-                    break;
-            }
-            return 0;
+            return (int)(ScreenSize.X * percentage / 100);
+        }
+        private int PercentToY(float percentage)
+        {
+            return (int)(ScreenSize.Y * percentage / 100);
         }
     }
 }
