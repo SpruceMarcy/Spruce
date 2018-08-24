@@ -108,9 +108,9 @@ namespace SpruceGame
                 { "Container",Content.Load<Texture2D>("ContainerTemp") },
                 { "Player",Content.Load<Texture2D>("PlayerTemp")},
                 { "MenuTemplate",Content.Load<Texture2D>("MenuTemplate")},
-                { "PauseMenu",new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(524f/27f))}
+                { "PauseMenu",new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(767f/27f))}
             };//MB: Initializes the texture dictionary
-            Textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(Textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(524f / 27f))));
+            Textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(Textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(767f / 27f))));
 
             MainFont = Content.Load<SpriteFont>("MainFont");
             InputFont = Content.Load<SpriteFont>("Monospace");
@@ -262,8 +262,8 @@ namespace SpruceGame
                     break;
                 case GameState.PausedInGame:
                     LoadedGame.Draw(spriteBatch);
-                    spriteBatch.Draw(Textures["PauseMenu"], new Vector2(PercentToX(124f/3f),PercentToY(1088f/27f)));
-                    foreach (string ButtonName in new string[] { "PausedContinue", "PausedExit" }) //MB: Draws the buttons
+                    spriteBatch.Draw(Textures["PauseMenu"], new Vector2(PercentToX(124f/3f),PercentToY(1933/54f)));
+                    foreach (string ButtonName in new string[] { "PausedContinue", "PausedSave", "PausedExit" }) //MB: Draws the buttons
                     {
                         MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
                     }
@@ -298,8 +298,9 @@ namespace SpruceGame
                 { "NewGameStart", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(51), PercentToX(200f/15f), PercentToY(205f/27f)), "Start", GraphicsDevice, Textures, MainFont) },
                 { "NewGameBack", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(60), PercentToX(200f/15f), PercentToY(205f/27f)), "Back", GraphicsDevice, Textures, MainFont) },
                 { "NewGameRandom", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(37), PercentToX(200f/15f), PercentToY(205f/27f)), "Random Seed", GraphicsDevice, Textures, MainFont) },
-                { "PausedContinue", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(1126f/27f), PercentToX(200f/15f), PercentToY(205f/27f)), "Continue", GraphicsDevice, Textures, MainFont) },
-                { "PausedExit", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(1369f/27f), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit to menu", GraphicsDevice, Textures, MainFont) }
+                { "PausedContinue", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2009f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Continue", GraphicsDevice, Textures, MainFont) },
+                { "PausedSave", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2495f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Save", GraphicsDevice, Textures, MainFont) },
+                { "PausedExit", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2981f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit to menu", GraphicsDevice, Textures, MainFont) }
             };
             return MenuButtons;
         }
