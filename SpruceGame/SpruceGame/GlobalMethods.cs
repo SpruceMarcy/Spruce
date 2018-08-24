@@ -113,17 +113,27 @@ namespace SpruceGame
             return 0;
         }
     }
-    class Coord
+    public class Coord
     {
-        float X;
-        float Y;
+        public float X;
+        public float Y;
         public Coord(float X,float Y)
         {
             this.X = X;
             this.Y = Y;
         }
         public static Coord operator +(Coord coord1, Coord coord2) => new Coord(coord1.X + coord2.X, coord1.Y + coord2.Y);
+        public static Coord operator -(Coord coord1, Coord coord2) => new Coord(coord1.X - coord2.X, coord1.Y - coord2.Y);
+        public static Coord operator /(Coord coord1, float denominator) => new Coord(coord1.X/denominator, coord1.Y/denominator);
         public Vector2 ToVector2() => new Vector2(X, Y);
         public Point ToPoint() => new Point((int)X, (int)Y);
+
+        public override bool Equals(object obj)
+        {
+            var coord = obj as Coord;
+            return coord != null &&
+                   X == coord.X &&
+                   Y == coord.Y;
+        }
     }
 }
