@@ -3,10 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
+using System;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
 {
+    [Serializable]
     public class Tile
     {
         // - - - - Variables Global to this tile
@@ -23,6 +25,7 @@ namespace SpruceGame
             spritebatch.Draw(texture, Position);
         }
     }
+    [Serializable]
     public class Room
     {
         // - - - - Variables Global to this Room

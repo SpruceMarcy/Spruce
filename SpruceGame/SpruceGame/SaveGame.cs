@@ -8,6 +8,7 @@ using System;
 
 namespace SpruceGame
 {
+    [Serializable]
     public class SaveGame
     {
         // - - - - Variables Global to this Save

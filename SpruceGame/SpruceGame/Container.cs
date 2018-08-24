@@ -3,11 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
+using System;
 using static SpruceGame.GlobalMethods;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
 {
+    [Serializable]
     public class Container
     {
         Texture2D texture;
@@ -54,6 +56,7 @@ namespace SpruceGame
             }
         }
     }
+    [Serializable]
     public class Item
     {
         string DisplayName;

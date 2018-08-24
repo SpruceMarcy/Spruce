@@ -8,6 +8,7 @@ using System;
 
 namespace SpruceGame
 {
+    [Serializable]
     public class Level
     {
         // - - - - Variables Global to this Level
