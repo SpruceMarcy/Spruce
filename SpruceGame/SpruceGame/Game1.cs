@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
 using System.Text.RegularExpressions;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 using static SpruceGame.GlobalMethods;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
@@ -150,6 +152,14 @@ namespace SpruceGame
                     {
                         if (MenuButtons["MainMenuExit"].ClickCheck(mouseState.Position))//MB: If exit button clicked
                             Exit();
+                        if (MenuButtons["MainMenuContinue"].ClickCheck(mouseState.Position))
+                        {
+                            BinaryFormatter binaryFormatter = new BinaryFormatter();
+                            Stream stream = File.Open("Save.xml", FileMode.Open);
+                            binaryFormatter.Serialize(stream,LoadedGame);
+                            stream.Close();
+                            GameState = GameState.InGame;
+                        }
                         if (MenuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked
                             GameState = GameState.NewGame;
                         if (MenuButtons["MainMenuLoadGame"].ClickCheck(mouseState.Position))//MB: If load game button clicked
