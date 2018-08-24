@@ -156,7 +156,7 @@ namespace SpruceGame
                         {
                             BinaryFormatter binaryFormatter = new BinaryFormatter();
                             Stream stream = File.Open("Save.xml", FileMode.Open);
-                            binaryFormatter.Serialize(stream,LoadedGame);
+                            LoadedGame= (SaveGame)binaryFormatter.Deserialize(stream);
                             stream.Close();
                             GameState = GameState.InGame;
                         }
