@@ -12,47 +12,46 @@ namespace SpruceGame
     [Serializable]
     public class Container
     {
-        Texture2D texture;
+        string textureKey;
         float angle;
         float Radius;
-        Vector2 Position;
+        Coord Position;
         List<Item> Contents;
+        [NonSerialized]
         private Texture2D Menu;
-        private Texture2D MenuTemplate;
+        string MenuTemplateKey;
         private List<Button> ContentList;
         private bool IsMenuVisible=false;
-        public Container(Texture2D texture,Texture2D MenuTemplate, Vector2 Position, List<Item> Contents, float Radius, float angle = 0)
+        public Container(string textureKey,String MenuTemplateKey, Coord Position, List<Item> Contents, float Radius, float angle = 0)
         {
-            this.texture = texture;
+            this.textureKey = textureKey;
             this.Position = Position;
             this.Contents = Contents;
             this.Radius = Radius;
             this.angle = angle;
-            this.MenuTemplate = MenuTemplate;
+            this.MenuTemplateKey = MenuTemplateKey;
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 RoomOffset)
+        public void Draw(SpriteBatch spriteBatch, Coord RoomOffset, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict)
         {
-            Vector2 DrawPosition = RoomOffset + Position;
-            spriteBatch.Draw(texture,new Rectangle( DrawPosition.ToPoint(),texture.Bounds.Size), null,Color.White, angle, Vector2.Zero, SpriteEffects.None, 0);
+            Coord DrawPosition = RoomOffset + Position;
+            spriteBatch.Draw(TextureDict[textureKey],new Rectangle( DrawPosition.ToPoint(),TextureDict[textureKey].Bounds.Size), null,Color.White, angle, Vector2.Zero, SpriteEffects.None, 0);
             if (IsMenuVisible)
             {
-                spriteBatch.Draw(Menu, DrawPosition);
+                Menu = new Texture2D(graphicsDevice, 100, 100);
+                Menu.SetData<Color>(GetRectangleDataFromTemplate(TextureDict[MenuTemplateKey], new Rectangle(0, 0, 100, 100)));
+                spriteBatch.Draw(Menu, DrawPosition.ToVector2());
             }
         }
-        public void Update(MouseState mouseState, Vector2 RoomOffset,GraphicsDevice graphicsDevice)
+        public void Update(MouseState mouseState, Coord RoomOffset)
         {
             if (IsMenuVisible)
             {
-                IsMenuVisible = Vector2.Distance(mouseState.Position.ToVector2(), RoomOffset + Position) < Radius || Menu.Bounds.Contains(mouseState.Position.ToVector2()-RoomOffset-Position);
+                IsMenuVisible = Vector2.Distance(mouseState.Position.ToVector2(), (RoomOffset + Position).ToVector2()) < Radius || Menu.Bounds.Contains(mouseState.Position.ToVector2()-RoomOffset.ToVector2()-Position.ToVector2());
             }
             else
             {
-                IsMenuVisible = Vector2.Distance(mouseState.Position.ToVector2(), RoomOffset + Position) < Radius && mouseState.LeftButton==ButtonState.Pressed;
-                if (IsMenuVisible)
-                {
-                    Menu = new Texture2D(graphicsDevice,100,100);
-                    Menu.SetData<Color>(GetRectangleDataFromTemplate(MenuTemplate, new Rectangle(0, 0, 100, 100)));
-                }
+                IsMenuVisible = Vector2.Distance(mouseState.Position.ToVector2(), (RoomOffset + Position).ToVector2()) < Radius && mouseState.LeftButton==ButtonState.Pressed;
+
             }
         }
     }

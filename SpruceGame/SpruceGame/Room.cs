@@ -13,16 +13,16 @@ namespace SpruceGame
     {
         // - - - - Variables Global to this tile
         public bool isSolid;
-        Texture2D texture;
+        string textureKey;
         // - - - - - - - - - - - - - - - - - - -
-        public Tile(Texture2D texture, bool isSolid)
+        public Tile(string textureKey, bool isSolid)
         {
-            this.texture = texture;
+            this.textureKey = textureKey;
             this.isSolid = isSolid;
         }
-        public void draw(SpriteBatch spritebatch, Vector2 Position)
+        public void draw(SpriteBatch spritebatch, Coord Position, Dictionary<string, Texture2D> TextureDict)
         {
-            spritebatch.Draw(texture, Position);
+            spritebatch.Draw(TextureDict[textureKey], Position.ToVector2());
         }
     }
     [Serializable]
@@ -39,71 +39,71 @@ namespace SpruceGame
         {
             this.width = width;
             this.height = height;
-            Containers = new List<Container> { new Container(TextureDict["Container"],TextureDict["MenuTemplate"],new Vector2(90,32*11),new List<Item> { },48)};
+            Containers = new List<Container> { new Container("Container","MenuTemplate",new Coord(90,32*11),new List<Item> { },48)};
             tiles = new Tile[width, height];
-            tiles[0, 0] = new Tile(TextureDict["WallTopLeft"], true);
+            tiles[0, 0] = new Tile("WallTopLeft", true);
             for (int x = 1; x < width-1; x++)
             {
-                tiles[x, 0] = new Tile(TextureDict["WallTop"], true);
+                tiles[x, 0] = new Tile("WallTop", true);
             }
-            tiles[width-1, 0] = new Tile(TextureDict["WallTopRight"], true);
+            tiles[width-1, 0] = new Tile("WallTopRight", true);
             for (int y = 1; y < height - 1; y++)
             {
-                tiles[width-1, y] = new Tile(TextureDict["WallRight"], true);
+                tiles[width-1, y] = new Tile("WallRight", true);
             }
-            tiles[width-1, height-1] = new Tile(TextureDict["WallBottomRight"], true);
+            tiles[width-1, height-1] = new Tile("WallBottomRight", true);
             for (int x = 1; x < width - 1; x++)
             {
-                tiles[x, height-1] = new Tile(TextureDict["WallBottom"], true);
+                tiles[x, height-1] = new Tile("WallBottom", true);
             }
-            tiles[0, height-1] = new Tile(TextureDict["WallBottomLeft"], true);
+            tiles[0, height-1] = new Tile("WallBottomLeft", true);
             for (int y = 1; y < height - 1; y++)
             {
-                tiles[0, y] = new Tile(TextureDict["WallLeft"], true);
+                tiles[0, y] = new Tile("WallLeft", true);
             }
             for (int y = 1; y < height - 1; y++)
             {
                 for (int x = 1; x < width - 1; x++)
                 {
-                    tiles[x, y] = new Tile(TextureDict["WallMiddle"], false);
+                    tiles[x, y] = new Tile("WallMiddle", false);
                 }
             }
             if ((DoorProfile & 0b1) == 0b1)
             {
-                tiles[width / 2, 0] = new Tile(TextureDict["WallMiddle"], false);
+                tiles[width / 2, 0] = new Tile("WallMiddle", false);
             }
             if ((DoorProfile & 0b10) == 0b10)
             {
-                tiles[0, height/2] = new Tile(TextureDict["WallMiddle"], false);
+                tiles[0, height/2] = new Tile("WallMiddle", false);
             }
             if ((DoorProfile & 0b100) == 0b100)
             {
-                tiles[width / 2, height-1] = new Tile(TextureDict["WallMiddle"], false);
+                tiles[width / 2, height-1] = new Tile("WallMiddle", false);
             }
             if ((DoorProfile & 0b1000) == 0b1000)
             {
-                tiles[width-1, height / 2] = new Tile(TextureDict["WallMiddle"], false);
+                tiles[width-1, height / 2] = new Tile("WallMiddle", false);
             }
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict)
         {
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    tiles[x, y].draw(spriteBatch,position+new Vector2(x*32,y*32));
+                    tiles[x, y].draw(spriteBatch,position+new Coord(x*32,y*32),TextureDict);
                 }
             }
             foreach (Container container in Containers)
             {
-                container.Draw(spriteBatch, position);
+                container.Draw(spriteBatch, position,graphicsDevice,TextureDict);
             }
         }
-        public void Update(MouseState mouseState, Vector2 position,GraphicsDevice graphicsDevice)
+        public void Update(MouseState mouseState, Coord position)
         {
             foreach (Container container in Containers)
             {
-                container.Update(mouseState, position,graphicsDevice);
+                container.Update(mouseState, position);
             }
         }
     }

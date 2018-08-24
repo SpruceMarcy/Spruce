@@ -199,7 +199,7 @@ namespace SpruceGame
                     {
                         GameState = GameState.PausedInGame;
                     }
-                    LoadedGame.Update(keyboardState,mouseState,GraphicsDevice);
+                    LoadedGame.Update(keyboardState,mouseState);
                     break;
                 case GameState.PausedInGame:
                     if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))
@@ -265,10 +265,10 @@ namespace SpruceGame
                     SeedBox.Draw(spriteBatch);
                     break;
                 case GameState.InGame:
-                    LoadedGame.Draw(spriteBatch);
+                    LoadedGame.Draw(spriteBatch,GraphicsDevice,Textures);
                     break;
                 case GameState.PausedInGame:
-                    LoadedGame.Draw(spriteBatch);
+                    LoadedGame.Draw(spriteBatch,GraphicsDevice,Textures);
                     spriteBatch.Draw(Textures["PauseMenu"], new Vector2(PercentToX(124f/3f),PercentToY(1933/54f)));
                     foreach (string ButtonName in new string[] { "PausedContinue", "PausedSave", "PausedExit" }) //MB: Draws the buttons
                     {

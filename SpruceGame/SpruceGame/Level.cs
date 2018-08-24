@@ -24,7 +24,7 @@ namespace SpruceGame
             this.height = height;
             rooms = GenerateLabyrinth(RoomCount,new Vector2(5,5),new Vector2(0,0),TextureDict,seed);
         }
-        public void Update(MouseState mouseState, Vector2 Position,GraphicsDevice graphicsDevice)
+        public void Update(MouseState mouseState, Coord Position)
         {
             for (int x = 0; x < width; x++)
             {
@@ -32,12 +32,12 @@ namespace SpruceGame
                 {
                     if (rooms[x, y] != null)
                     {
-                        rooms[x, y].Update(mouseState,Position + new Vector2(x * 32 * 16, y * 32 * 16),graphicsDevice);
+                        rooms[x, y].Update(mouseState,Position + new Coord(x * 32 * 16, y * 32 * 16));
                     }
                 }
             }
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 Position)
+        public void Draw(SpriteBatch spriteBatch, Coord Position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> TextureDict)
         {
             for (int x = 0; x < width; x++)
             {
@@ -45,7 +45,7 @@ namespace SpruceGame
                 {
                     if (rooms[x,y] != null)
                     {
-                        rooms[x,y].Draw(spriteBatch, Position+new Vector2(x*32*16,y * 32 * 16));
+                        rooms[x,y].Draw(spriteBatch, Position+new Coord(x*32*16,y * 32 * 16),graphicsDevice,TextureDict);
                     }
                 }
             }

@@ -15,19 +15,19 @@ namespace SpruceGame
         readonly string SaveName;
         byte[] Seed;
         Level LoadedLevel;
-        Texture2D PlayerTexture;
+        String PlayerTextureKey;
         Coord PlayerPos;
         // - - - - - - - - - - - - - - - - - - -
 
-        public SaveGame(byte[] Seed,Dictionary<string,Texture2D> TextureDict) //sub new
+        public SaveGame(byte[] Seed, Dictionary<string, Texture2D> TextureDict) //sub new
         {
             this.Seed = Seed;
             LoadedLevel = new Level(5,5,TextureDict,Seed,15);
             PlayerPos = new Coord(300, 300);
-            PlayerTexture = TextureDict["Player"];
+            PlayerTextureKey = "Player";
         }
 
-        public void Update(KeyboardState keyboardState, MouseState mouseState,GraphicsDevice graphicsDevice) //backend
+        public void Update(KeyboardState keyboardState, MouseState mouseState) //backend
         {
             Coord movementVector = new Coord(0,0);
             if (keyboardState.IsKeyDown(Keys.W))
@@ -55,13 +55,14 @@ namespace SpruceGame
             {
                 PlayerPos += movementVector;
             }
-            LoadedLevel.Update(mouseState, (new Coord(960, 540) - PlayerPos).ToVector2(),graphicsDevice);
+            LoadedLevel.Update(mouseState, new Coord(960, 540) - PlayerPos);
         }
 
-        public void Draw(SpriteBatch spriteBatch) //frontend
+        public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict) //frontend
         {
-            LoadedLevel.Draw(spriteBatch,(new Coord(960,540)-PlayerPos).ToVector2());
+            LoadedLevel.Draw(spriteBatch,new Coord(960,540)-PlayerPos,graphicsDevice,TextureDict);
             {
+                Texture2D PlayerTexture = TextureDict[PlayerTextureKey];
                 float angle = (float)Math.Atan2(Mouse.GetState().Position.Y - 540, Mouse.GetState().Position.X - 960) + MathHelper.PiOver2;
                 Point SpritePosition = new Point((int)(960-(new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Cos(angle+Math.Atan2(PlayerTexture.Height/2, PlayerTexture.Width / 2)))), (int)(540 - (new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Sin(angle + Math.Atan2( PlayerTexture.Height / 2, PlayerTexture.Width / 2)))));
                 spriteBatch.Draw(PlayerTexture, new Rectangle(SpritePosition, new Point(PlayerTexture.Width, PlayerTexture.Height)), null, Color.Black, angle, Vector2.Zero, SpriteEffects.None, 0);

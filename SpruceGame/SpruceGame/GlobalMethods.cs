@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
-using System.Text.RegularExpressions;
+using System;
 
 namespace SpruceGame
 {
@@ -113,6 +113,7 @@ namespace SpruceGame
             return 0;
         }
     }
+    [Serializable]
     public class Coord
     {
         public float X;
