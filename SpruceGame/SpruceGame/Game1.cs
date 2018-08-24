@@ -212,6 +212,13 @@ namespace SpruceGame
                         {
                             GameState = GameState.InGame;
                         }
+                        if (MenuButtons["PausedSave"].ClickCheck(mouseState.Position))
+                        {
+                            BinaryFormatter binaryFormatter = new BinaryFormatter();
+                            Stream stream = File.Open("Save.xml", FileMode.Create);
+                            binaryFormatter.Serialize(stream, LoadedGame);
+                            stream.Close();
+                        }
                         if (MenuButtons["PausedExit"].ClickCheck(mouseState.Position))
                         {
                             GameState = GameState.MainMenu;
