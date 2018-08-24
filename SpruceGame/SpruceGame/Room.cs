@@ -27,6 +27,7 @@ namespace SpruceGame
     {
         // - - - - Variables Global to this Room
         public Tile[,] tiles;
+        public List<Container> Containers;
         int width;
         int height;
 
@@ -35,6 +36,7 @@ namespace SpruceGame
         {
             this.width = width;
             this.height = height;
+            Containers = new List<Container> { new Container(TextureDict["Container"],TextureDict["MenuTemplate"],new Vector2(90,32*11),new List<Item> { },48)};
             tiles = new Tile[width, height];
             tiles[0, 0] = new Tile(TextureDict["WallTopLeft"], true);
             for (int x = 1; x < width-1; x++)
@@ -80,7 +82,7 @@ namespace SpruceGame
                 tiles[width-1, height / 2] = new Tile(TextureDict["WallMiddle"], false);
             }
         }
-        public void draw(SpriteBatch spriteBatch, Vector2 position)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             for (int y = 0; y < height; y++)
             {
@@ -88,6 +90,17 @@ namespace SpruceGame
                 {
                     tiles[x, y].draw(spriteBatch,position+new Vector2(x*32,y*32));
                 }
+            }
+            foreach (Container container in Containers)
+            {
+                container.Draw(spriteBatch, position);
+            }
+        }
+        public void Update(MouseState mouseState, Vector2 position,GraphicsDevice graphicsDevice)
+        {
+            foreach (Container container in Containers)
+            {
+                container.Update(mouseState, position,graphicsDevice);
             }
         }
     }

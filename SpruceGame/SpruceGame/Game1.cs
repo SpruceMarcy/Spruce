@@ -103,10 +103,12 @@ namespace SpruceGame
                 { "WallBottomLeft", Content.Load<Texture2D>("WallBottomLeft") },
                 { "WallLeft", Content.Load<Texture2D>("WallLeft") },
                 { "WallMiddle", Content.Load<Texture2D>("WallMiddle") },
+                { "Container",Content.Load<Texture2D>("ContainerTemp") },
                 { "Player",Content.Load<Texture2D>("PlayerTemp")},
+                { "MenuTemplate",Content.Load<Texture2D>("MenuTemplate")},
                 { "PauseMenu",new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(524f/27f))}
             };//MB: Initializes the texture dictionary
-            Textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(Content.Load<Texture2D>("MenuTemplate"),new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(524f / 27f))));
+            Textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(Textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(524f / 27f))));
 
             MainFont = Content.Load<SpriteFont>("MainFont");
             InputFont = Content.Load<SpriteFont>("Monospace");
@@ -187,7 +189,7 @@ namespace SpruceGame
                     {
                         GameState = GameState.PausedInGame;
                     }
-                    LoadedGame.Update(keyboardState);
+                    LoadedGame.Update(keyboardState,mouseState,GraphicsDevice);
                     break;
                 case GameState.PausedInGame:
                     if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))

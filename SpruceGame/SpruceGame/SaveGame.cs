@@ -26,7 +26,7 @@ namespace SpruceGame
             PlayerTexture = TextureDict["Player"];
         }
 
-        public void Update(KeyboardState keyboardState) //backend
+        public void Update(KeyboardState keyboardState, MouseState mouseState,GraphicsDevice graphicsDevice) //backend
         {
             Vector2 movementVector = Vector2.Zero;
             if (keyboardState.IsKeyDown(Keys.W))
@@ -54,11 +54,12 @@ namespace SpruceGame
             {
                 PlayerPos += movementVector;
             }
+            LoadedLevel.Update(mouseState, new Vector2(960, 540) - PlayerPos,graphicsDevice);
         }
 
         public void Draw(SpriteBatch spriteBatch) //frontend
         {
-            LoadedLevel.draw(spriteBatch,new Vector2(960,540)-PlayerPos);
+            LoadedLevel.Draw(spriteBatch,new Vector2(960,540)-PlayerPos);
             {
                 float angle = (float)Math.Atan2(Mouse.GetState().Position.Y - 540, Mouse.GetState().Position.X - 960) + MathHelper.PiOver2;
                 Point SpritePosition = new Point((int)(960-(new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Cos(angle+Math.Atan2(PlayerTexture.Height/2, PlayerTexture.Width / 2)))), (int)(540 - (new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Sin(angle + Math.Atan2( PlayerTexture.Height / 2, PlayerTexture.Width / 2)))));
