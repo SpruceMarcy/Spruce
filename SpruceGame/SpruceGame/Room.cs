@@ -3,44 +3,45 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
-using System;
+using System;//MB: Allows use of [Serializable]
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
 {
-    [Serializable]
+    [Serializable]//MB: This allows an instance of this class to be written to file
     public class Tile
     {
         // - - - - Variables Global to this tile
-        public bool isSolid;
-        string textureKey;
+        public bool isSolid;//MB: Determines whether the player can walk on his tile
+        string textureKey;//MB: Used with a texture dictionary to get the texture of this tile
         // - - - - - - - - - - - - - - - - - - -
         public Tile(string textureKey, bool isSolid)
         {
             this.textureKey = textureKey;
             this.isSolid = isSolid;
         }
-        public void draw(SpriteBatch spritebatch, Coord Position, Dictionary<string, Texture2D> TextureDict)
+        public void Draw(SpriteBatch spritebatch, Coord Position, Dictionary<string, Texture2D> TextureDict)
         {
             spritebatch.Draw(TextureDict[textureKey], Position.ToVector2());
         }
     }
-    [Serializable]
+    [Serializable]//MB: This allows an instance of this class to be written to file
     public class Room
     {
         // - - - - Variables Global to this Room
-        public Tile[,] tiles;
-        public List<Container> Containers;
-        int width;
-        int height;
+        public Tile[,] tiles;//MB: The collection of tiles that make up the room
+        public List<Container> Containers;//MB: The collection of containers confined to this room
+        int width;//MB: The width of the room in tiles
+        int height;//MB: The height of the room in tiles
 
         // - - - - - - - - - - - - - - - - - - -
-        public Room(int width, int height,Dictionary<string,Texture2D> TextureDict,byte DoorProfile)
+        public Room(int width, int height, byte DoorProfile)
         {
             this.width = width;
             this.height = height;
-            Containers = new List<Container> { new Container("Container","MenuTemplate",new Coord(90,32*11),new List<Item> { },48)};
+            Containers = new List<Container> { new Container("Container","MenuTemplate",new Coord(90,32*11),new List<Item> { },48)};//MB: Test container
             tiles = new Tile[width, height];
+            //MB: The following is a painstaking method of assigning tiles based on location
             tiles[0, 0] = new Tile("WallTopLeft", true);
             for (int x = 1; x < width-1; x++)
             {
@@ -68,6 +69,13 @@ namespace SpruceGame
                     tiles[x, y] = new Tile("WallMiddle", false);
                 }
             }
+            //MB: ...Sorry.
+            //MB: Door profiles are a way of combining boolean values. Think of each bit in the byte as its own boolean variable
+            //MB: The LSB determines if there is a door at the top of a room
+            //MB: The 4 most significant bits are unused
+            //MB: Therefore the format of a door profile is the following:
+            //MB: 0:0:0:0:RightDoor:BottomDoor:LeftDoor:TopDoor
+            //MB: For example, 00001010 represents a room with doors on the left and right.
             if ((DoorProfile & 0b1) == 0b1)
             {
                 tiles[width / 2, 0] = new Tile("WallMiddle", false);
@@ -91,19 +99,19 @@ namespace SpruceGame
             {
                 for (int x = 0; x < width; x++)
                 {
-                    tiles[x, y].draw(spriteBatch,position+new Coord(x*32,y*32),TextureDict);
+                    tiles[x, y].Draw(spriteBatch,position+new Coord(x*32,y*32),TextureDict);//MB: Draws each tile, one by one
                 }
             }
             foreach (Container container in Containers)
             {
-                container.Draw(spriteBatch, position,graphicsDevice,TextureDict);
+                container.Draw(spriteBatch, position,graphicsDevice,TextureDict);//MB: Draws each container in this room
             }
         }
         public void Update(MouseState mouseState, Coord position)
         {
             foreach (Container container in Containers)
             {
-                container.Update(mouseState, position);
+                container.Update(mouseState, position);//MB: Runs the game logic for each container
             }
         }
     }

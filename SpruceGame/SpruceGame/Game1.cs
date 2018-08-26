@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
 using System.Text.RegularExpressions;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using static SpruceGame.GlobalMethods;
+using System.Runtime.Serialization.Formatters.Binary;//MB: Allows saving objects to files
+using System.IO;//MB: Allows reading and writing of files
+using static SpruceGame.GlobalMethods;//MB: Allows the calling of the functions in GlobalMethods.cs without an instance or namespace 
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
@@ -32,26 +32,26 @@ namespace SpruceGame
         SpriteBatch spriteBatch;//Monogame
 
         //--------MB: Declare variables here that are global to the game--------
-        Dictionary<string, Texture2D> Textures;//MB: This variable stores all textures, accessible with an identifier
-        SpriteFont MainFont;//MB: This variable holds the font to be used. Only applies to buttons as of 16/07/18
-        SpriteFont InputFont;//MB: A monospaced font
+        Dictionary<string, Texture2D> Textures;//MB: This variable stores all textures, accessible with a string identifier
+        SpriteFont MainFont;//MB: This variable holds the font to be used for buttons etc
+        SpriteFont InputFont;//MB: A monospaced font for text inputs
         GameState GameState;//MB: This variable keeps track of whether the game is live or not etc.
-        Vector2 ScreenSize;
-        SaveGame LoadedGame;
-        MouseState PreviousMouseState;
-        KeyboardState PreviousKeyboardState;
-        Dictionary<string, Button> MenuButtons;//MB: The array of buttons on the main menu.
-        Textbox SeedBox;
+        Vector2 ScreenSize;//MB: The preferred width and height of the screen (X & Y respectively)
+        SaveGame LoadedGame;//MB: The instance of the game in play
+        MouseState PreviousMouseState; //MB: A variable to record what the mouse was doing last frame; to detect changes in button presses
+        KeyboardState PreviousKeyboardState;//MB: A variable to record what the keyboard
+        Dictionary<string, Button> MenuButtons;//MB: The collection of buttons that have a fixed occurence
+        Textbox SeedBox;//MB: The textbox where the user can enter a level seed when starting a new game
 
         Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
         //---------------------------------------------------------------------
 
         public Game1()
         {
-            //MB: don't know when this is called; best not touch it
+            //MB: when the game is instanciated. I think it's better to put everything from here in Initialize()
             graphics = new GraphicsDeviceManager(this);//Monogame
             Content.RootDirectory = "Content";//Monogame
-            ScreenSize = new Vector2(1920, 1080);//new Vector2(720, 480);//
+            ScreenSize = new Vector2(1920, 1080);//MB: This determines the size of the screen TODO: read from settings file instead
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace SpruceGame
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);//Monogame: Create a new SpriteBatch, which can be used to draw textures.
-            Textures = new Dictionary<string, Texture2D>
+            Textures = new Dictionary<string, Texture2D>//MB: Textures are stored so that they can be accessed with a string
             {
                 //--------MB: Load all the textures here--------
                 { "Cursor", Content.Load<Texture2D>("Cursor") },
@@ -110,7 +110,7 @@ namespace SpruceGame
                 { "MenuTemplate",Content.Load<Texture2D>("MenuTemplate")},
                 { "PauseMenu",new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(767f/27f))}
             };//MB: Initializes the texture dictionary
-            Textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(Textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(767f / 27f))));
+            Textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(Textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(767f / 27f))));//MB: This makes the pause menu background
 
             MainFont = Content.Load<SpriteFont>("MainFont");
             InputFont = Content.Load<SpriteFont>("Monospace");
@@ -141,10 +141,10 @@ namespace SpruceGame
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.F1))
-                Exit();//Monogame MB: This means you can press escape to exit
-                       //MB: Potentially we could store the keyboard.GetState() in a variable so we don't have to keep calling it
-            KeyboardState keyboardState = Keyboard.GetState();
-            MouseState mouseState = Mouse.GetState();
+                Exit();//Monogame MB: This means you can press F1 to exit at any time
+                       //MB: Please use these following variables instead of calling any .getstate()
+            KeyboardState keyboardState = Keyboard.GetState();//MB: This gets the state of all buttons on the keyboard in this frame
+            MouseState mouseState = Mouse.GetState();//MB: This gets the postion and button state of the mouse in this frame
             switch (GameState)//MB: This is where State-Dependent game logic goes
             {
                 case GameState.MainMenu:
@@ -152,13 +152,13 @@ namespace SpruceGame
                     {
                         if (MenuButtons["MainMenuExit"].ClickCheck(mouseState.Position))//MB: If exit button clicked
                             Exit();
-                        if (MenuButtons["MainMenuContinue"].ClickCheck(mouseState.Position))
+                        if (MenuButtons["MainMenuContinue"].ClickCheck(mouseState.Position))//MB: If continue button clicked
                         {
-                            BinaryFormatter binaryFormatter = new BinaryFormatter();
-                            Stream stream = File.Open("Save.xml", FileMode.Open);
-                            LoadedGame= (SaveGame)binaryFormatter.Deserialize(stream);
-                            stream.Close();
-                            GameState = GameState.InGame;
+                            BinaryFormatter binaryFormatter = new BinaryFormatter();//MB: This is the thing that deserializes a file
+                            Stream stream = File.Open("Save.xml", FileMode.Open);//MB: Opens a file
+                            LoadedGame= (SaveGame)binaryFormatter.Deserialize(stream);//MB: Reads the SaveGame stored in file
+                            stream.Close();//MB: Closes the file
+                            GameState = GameState.InGame;//MB: Starts the game
                         }
                         if (MenuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked
                             GameState = GameState.NewGame;
@@ -173,55 +173,52 @@ namespace SpruceGame
                     {
                         if (MenuButtons["NewGameStart"].ClickCheck(mouseState.Position))//MB: If start button clicked
                         {
-                            while (SeedBox.Text.Length<6)
-                            {
-                                SeedBox.Text = SeedBox.Text + "0";
-                            }
-                            byte[] bytearray = new byte[SeedBox.Text.Length / 2];
-                            for (int i = 0; i < bytearray.Length; i++)
+                            while (SeedBox.Text.Length<6) SeedBox.Text = SeedBox.Text + "0";//MB: This adds 0s to the seed if it isn't 6 characters long
+                            byte[] bytearray = new byte[SeedBox.Text.Length / 2];//MB: This is used to store the seed
+                            for (int i = 0; i < bytearray.Length; i++)//MB: This loop takes each two chars from the textbox and puts it in the seed as a byte
                             {
                                 bytearray[i] = (byte)((HexCharToByte(SeedBox.Text[2 * i]) * 16) + HexCharToByte(SeedBox.Text[(2 * i) + 1]));
                             }
-                            LoadedGame = new SaveGame(bytearray, Textures);
-                            Window.Title = bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();
-                            GameState = GameState.InGame;
+                            LoadedGame = new SaveGame(bytearray, Textures);//MB: Instanciates a new game
+                            Window.Title = bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();//MB: Puts the seed in the window bar at the top of the screen
+                            GameState = GameState.InGame;//MB: Starts the game
                         }
                         if (MenuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
-                            GameState = GameState.MainMenu;
-                        if (MenuButtons["NewGameRandom"].ClickCheck(mouseState.Position))
-                            SeedBox.Text="000000";
+                            GameState = GameState.MainMenu;//MB: Go to the main menu
+                        if (MenuButtons["NewGameRandom"].ClickCheck(mouseState.Position))//MB: If Random Seed button clicked
+                            SeedBox.Text="000000";//MB: Set the seed to 0
                     }
-                    SeedBox.Update(keyboardState, mouseState);
-                    MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);
+                    SeedBox.Update(keyboardState, mouseState);//MB: Runs the textbox logic, updating the seed textbox with the input from this frame
+                    MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);//MB: only allows a new game to start if the seed is a valid hex string
                     break;
                 case GameState.InGame:
-                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))
+                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))//MB: If esc key is pressed down
                     {
-                        GameState = GameState.PausedInGame;
+                        GameState = GameState.PausedInGame;//MB: Pause the game
                     }
-                    LoadedGame.Update(keyboardState,mouseState);
+                    LoadedGame.Update(keyboardState,mouseState);//MB: Run the save-dependent logic for this frame, like physics
                     break;
                 case GameState.PausedInGame:
-                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))
+                    if (keyboardState.IsKeyDown(Keys.Escape) && PreviousKeyboardState.IsKeyUp(Keys.Escape))//MB: If esc key is pressed down
                     {
-                        GameState = GameState.InGame;
+                        GameState = GameState.InGame;//MB: Unpause the game
                     }
                     if (PreviousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released) //MB: if mousedown
                     {
-                        if (MenuButtons["PausedContinue"].ClickCheck(mouseState.Position))
+                        if (MenuButtons["PausedContinue"].ClickCheck(mouseState.Position))//MB: If continue button clicked
                         {
-                            GameState = GameState.InGame;
+                            GameState = GameState.InGame;//MB: Unpause the game
                         }
-                        if (MenuButtons["PausedSave"].ClickCheck(mouseState.Position))
+                        if (MenuButtons["PausedSave"].ClickCheck(mouseState.Position))//MB: If save button clicked
                         {
-                            BinaryFormatter binaryFormatter = new BinaryFormatter();
-                            Stream stream = File.Open("Save.xml", FileMode.Create);
-                            binaryFormatter.Serialize(stream, LoadedGame);
-                            stream.Close();
+                            BinaryFormatter binaryFormatter = new BinaryFormatter();//MB: this object serializes the save when needed
+                            Stream stream = File.Open("Save.xml", FileMode.Create);//MB: Opens a file (blank)
+                            binaryFormatter.Serialize(stream, LoadedGame);//MB: Stores the current game in the file
+                            stream.Close();//MB: Closes the file
                         }
-                        if (MenuButtons["PausedExit"].ClickCheck(mouseState.Position))
+                        if (MenuButtons["PausedExit"].ClickCheck(mouseState.Position))//MB: If exit button clicked
                         {
-                            GameState = GameState.MainMenu;
+                            GameState = GameState.MainMenu;//MB: Return to menu
                         }
                     }
                     break;
@@ -233,7 +230,7 @@ namespace SpruceGame
                     throw new System.NotImplementedException("Invalid GameState");//MB: This should never run, which is why it'd throw an error
             }
             base.Update(gameTime);//Monogame
-            PreviousMouseState = mouseState;
+            PreviousMouseState = mouseState;//MB:Store the current mouse state as the previous in the next frame
             PreviousKeyboardState = keyboardState;
         }
 
@@ -243,7 +240,7 @@ namespace SpruceGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);//MB: Clears the frame with blue
+            GraphicsDevice.Clear(Color.Black);//MB: Clears the frame with black
 
             spriteBatch.Begin();//MB: Allows drawing
             switch (GameState)//MB: This is where State-Dependent screen updating goes
@@ -262,14 +259,14 @@ namespace SpruceGame
                     {
                         MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
                     }
-                    SeedBox.Draw(spriteBatch);
+                    SeedBox.Draw(spriteBatch);//MB: Draws the seed textbox
                     break;
                 case GameState.InGame:
-                    LoadedGame.Draw(spriteBatch,GraphicsDevice,Textures);
+                    LoadedGame.Draw(spriteBatch,GraphicsDevice,Textures);//MB: Draws the game to the screen
                     break;
                 case GameState.PausedInGame:
-                    LoadedGame.Draw(spriteBatch,GraphicsDevice,Textures);
-                    spriteBatch.Draw(Textures["PauseMenu"], new Vector2(PercentToX(124f/3f),PercentToY(1933/54f)));
+                    LoadedGame.Draw(spriteBatch,GraphicsDevice,Textures);//MB: Draws the game to the screen
+                    spriteBatch.Draw(Textures["PauseMenu"], new Vector2(PercentToX(124f/3f),PercentToY(1933/54f)));//MB: Draws the background to the pause menu
                     foreach (string ButtonName in new string[] { "PausedContinue", "PausedSave", "PausedExit" }) //MB: Draws the buttons
                     {
                         MenuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
@@ -282,17 +279,16 @@ namespace SpruceGame
                 default:
                     throw new System.NotImplementedException("Invalid GameState");//MB: This should never run, which is why it'd throw an error
             }
-            spriteBatch.Draw(Textures["Cursor"], new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y));//MB: Draws the cursor at the mouse
+            spriteBatch.Draw(Textures["Cursor"], new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y));//MB: Draws the cursor at the mouse position
 
             spriteBatch.End();//MB: Drawing not allowed after this
             base.Draw(gameTime);//Monogame
         }
 
         /// <summary>
-        /// Returns an array of the buttons on the main menu. Hardcoded content.
+        /// Returns a dictionary of the non-dynamic buttons. Hardcoded content.
         /// </summary>
-        /// <param name="CentreScreen">The coordinates of the middle of the screen.</param>
-        /// <returns>Array of buttons</returns>
+        /// <returns>Dictionary of buttons</returns>
         private Dictionary<string, Button> GenerateMenuButtons()
         {
             Dictionary<string, Button> MenuButtons = new Dictionary<string, Button>
@@ -311,10 +307,20 @@ namespace SpruceGame
             };
             return MenuButtons;
         }
+        /// <summary>
+        /// Returns the position on the screen based on proportion rather than absolute value
+        /// </summary>
+        /// <param name="percentage">X position out of 100</param>
+        /// <returns></returns>
         private int PercentToX(float percentage)
         {
             return (int)(ScreenSize.X * percentage / 100);
         }
+        /// <summary>
+        /// Returns the position on the screen based on proportion rather than absolute value
+        /// </summary>
+        /// <param name="percentage">Y position out of 100</param>
+        /// <returns></returns>
         private int PercentToY(float percentage)
         {
             return (int)(ScreenSize.Y * percentage / 100);

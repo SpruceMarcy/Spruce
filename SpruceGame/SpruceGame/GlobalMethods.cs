@@ -7,6 +7,7 @@ using System;
 
 namespace SpruceGame
 {
+    //MB: These functions can be called without a class instance as long as the file contains "using static SpruceGame.GlobalMethods;"
     static class GlobalMethods
     {
         public static Color[] GetRectangleDataFromTemplate(Texture2D Template, Rectangle rectangle)
@@ -71,6 +72,9 @@ namespace SpruceGame
             }
             return TextureData;
         }
+        /// <summary>
+        /// returns the corresponding value of a hexadecimal character
+        /// </summary>
         public static byte HexCharToByte(char HexChar)
         {
             switch (HexChar)
@@ -114,7 +118,7 @@ namespace SpruceGame
         }
     }
     [Serializable]
-    public class Coord
+    public class Coord //MB: Custom XY grouping kinda like Vector2 or Point but can be written to file
     {
         public float X;
         public float Y;
@@ -126,13 +130,13 @@ namespace SpruceGame
         public static Coord operator +(Coord coord1, Coord coord2) => new Coord(coord1.X + coord2.X, coord1.Y + coord2.Y);
         public static Coord operator -(Coord coord1, Coord coord2) => new Coord(coord1.X - coord2.X, coord1.Y - coord2.Y);
         public static Coord operator /(Coord coord1, float denominator) => new Coord(coord1.X/denominator, coord1.Y/denominator);
+        public static Coord operator *(Coord coord1, float coefficient) => new Coord(coord1.X * coefficient, coord1.Y *coefficient);
         public Vector2 ToVector2() => new Vector2(X, Y);
         public Point ToPoint() => new Point((int)X, (int)Y);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object obj)//MB: auto-generatedd
         {
-            var coord = obj as Coord;
-            return coord != null &&
+            return obj is Coord coord &&
                    X == coord.X &&
                    Y == coord.Y;
         }

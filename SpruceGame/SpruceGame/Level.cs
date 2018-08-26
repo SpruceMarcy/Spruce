@@ -3,63 +3,73 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;///MB: Imports dictionaries
-using System;
+using System;//MB: Allows use of [Serializable]
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
 {
-    [Serializable]
+    [Serializable]//MB: This allows an instance of this class to be written to file
     public class Level
     {
         // - - - - Variables Global to this Level
-        readonly string LevelName;
-        public Room[,] rooms;
-        int width;
-        int height;
+        readonly string LevelName;//MB: Unused
+        public Room[,] rooms;//MB: The collection of rooms in this level
+        int width;//MB: The width of the level in rooms
+        int height;//MB: The height of the level in rooms
 
         // - - - - - - - - - - - - - - - - - - -
-        public Level(int width, int height, Dictionary<string, Texture2D> TextureDict,byte[] seed,int RoomCount)
+        public Level(int width, int height, Dictionary<string, Texture2D> TextureDict,byte[] seed,int RoomCount)//MB: On instanciation
         {
             this.width = width;
             this.height = height;
-            rooms = GenerateLabyrinth(RoomCount,new Vector2(5,5),new Vector2(0,0),TextureDict,seed);
+            rooms = GenerateLabyrinth(RoomCount,new Vector2(5,5),new Vector2(0,0),seed);//MB: Make a level with placeholder values
         }
-        public void Update(MouseState mouseState, Coord Position)
+        public void Update(MouseState mouseState, Coord Position)//MB: Runs through each room and updates them
         {
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (rooms[x, y] != null)
+                    if (rooms[x, y] != null)//MB: Prevents null reference exceptions
                     {
                         rooms[x, y].Update(mouseState,Position + new Coord(x * 32 * 16, y * 32 * 16));
                     }
                 }
             }
         }
-        public void Draw(SpriteBatch spriteBatch, Coord Position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> TextureDict)
+        public void Draw(SpriteBatch spriteBatch, Coord Position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> TextureDict)//MB: Draws the level to the screen
         {
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0;y < height; y++)
                 {
-                    if (rooms[x,y] != null)
+                    if (rooms[x,y] != null)//MB: Prevents null reference exceptions
                     {
                         rooms[x,y].Draw(spriteBatch, Position+new Coord(x*32*16,y * 32 * 16),graphicsDevice,TextureDict);
                     }
                 }
             }
         }
-        private Room[,] GenerateLabyrinth(int MaxRoomCount, Vector2 Dimensions, Vector2 StartRoom,Dictionary<string,Texture2D> TextureDict,byte[] seed)
+        /// <summary>
+        /// Generates a labyrinth of rooms using a partial Prim's algorithm on a randomised graph.
+        /// While a path is guaranteed to  each room, loops are random and more likely at higher room counts.
+        /// Entering a MaxRoomCount higher than the total amount of rooms possible will result in a completely open labyrinth (no solid walls)
+        /// </summary>
+        /// <param name="MaxRoomCount">The total amount of generated rooms in the labyrinth</param>
+        /// <param name="Dimensions">The size of the labyrinth in rooms</param>
+        /// <param name="StartRoom">Where the labyrinth will be generated from. Ideal starting room due to guarantee of existance</param>
+        /// <param name="seed">Seed for randomness. Will determine layout and contents of rooms</param>
+        /// <returns>2D array of rooms</returns>
+        private Room[,] GenerateLabyrinth(int MaxRoomCount, Vector2 Dimensions, Vector2 StartRoom,byte[] seed)
         {
+            // HERE BE DRAGONS //
             int RoomCount=1;
             Node[,] WeightMatrix = new Node[(int)Dimensions.X, (int)Dimensions.Y];
             for (int x = 0; x < Dimensions.X; x++)
             {
                 for (int y = 0; y < Dimensions.Y; y++)
                 {
-                    WeightMatrix[x, y] = new Node();
-                    WeightMatrix[x, y].Visited = false;
+                    WeightMatrix[x, y] = new Node {Visited = false};
                     if (y < Dimensions.Y - 1)
                     {
                         WeightMatrix[x, y].North = (uint)new Random(x + y).Next(1, 101);
@@ -140,6 +150,13 @@ namespace SpruceGame
                 {
                     if (WeightMatrix[x,y].Visited)
                     {
+                        //MB: ...Sorry.
+                        //MB: Door profiles are a way of combining boolean values. Think of each bit in the byte as its own boolean variable
+                        //MB: The LSB determines if there is a door at the top of a room
+                        //MB: The 4 most significant bits are unused
+                        //MB: Therefore the format of a door profile is the following:
+                        //MB: 0:0:0:0:RightDoor:BottomDoor:LeftDoor:TopDoor
+                        //MB: For example, 00001010 represents a room with doors on the left and right.
                         byte DoorProfile = 0;
                         if (x > 0 && WeightMatrix.GetEdgeValue(new Edge(new Vector2(x, y), new Vector2(x-1, y))) == 0)
                         {
@@ -157,7 +174,7 @@ namespace SpruceGame
                         {
                             DoorProfile |= 0b100;
                         }
-                        rooms[x, y] = new Room(16, 16, TextureDict,DoorProfile);
+                        rooms[x, y] = new Room(16, 16,DoorProfile);
                     }
                 }
             }
@@ -165,6 +182,9 @@ namespace SpruceGame
         }
     }
 }
+/// <summary>
+/// For use in Prim's algorithm
+/// </summary>
 public class Edge
 {
     public Vector2 One;
@@ -181,15 +201,21 @@ public class Edge
         }
     }
 }
+/// <summary>
+/// For use in Prim's algorithm
+/// </summary>
 public class Node
 {
     public uint North;
     public uint East;
     public bool Visited;
 }
+/// <summary>
+/// For use in Prim's algorithm
+/// </summary>
 public static class Extensions
 {
-    public static uint GetEdgeValue(this Node[,] nodes, Edge edge)
+    public static uint GetEdgeValue(this Node[,] nodes, Edge edge)//MB: the "this" means that this function is called on a 2d array of nodes
     {
         Node NodeOne = nodes[(int)edge.One.X, (int)edge.One.Y];
         Node NodeTwo = nodes[(int)edge.Two.X, (int)edge.Two.Y];

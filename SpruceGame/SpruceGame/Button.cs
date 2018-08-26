@@ -14,14 +14,14 @@ namespace SpruceGame
     public class Button
     {
         private Texture2D ButtonTexture;//MB: Holds the texture for the sprite without text
-        private Texture2D HoverTexture;
-        private Texture2D PressedTexture;
-        private Texture2D DisabledTexture;
-        private Texture2D SelectedTexture;
+        private Texture2D HoverTexture;//MB: Texture for when the mouse is over the button
+        private Texture2D PressedTexture;//MB: Texture for when the button is being clicked
+        private Texture2D DisabledTexture;//MB: Texture for when the button is unclickable
+        private Texture2D SelectedTexture;//MB: Texture for when the button is activated
         readonly Rectangle rectangle;//MB: This is the size and position of the button.
                                      //MB: If you need to change it; just declare a new button.
         public bool Enabled = true;//MB: If false, the button will be greyed out and not function.
-        public bool Selected = false;//MB: For use externally as radio buttons and checkboxes
+        public bool Selected = false;//MB: For use with external logic to make radio buttons and checkboxes
         public string Text;//MB: The message on the button. Can be changed.
         SpriteFont ButtonFont;//MB: The font used to display the text on the button.
                               /// <summary>
