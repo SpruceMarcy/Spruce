@@ -78,19 +78,37 @@ namespace SpruceGame
             //MB: For example, 00001010 represents a room with doors on the left and right.
             if ((DoorProfile & 0b1) == 0b1)
             {
-                tiles[width / 2, 0] = new Tile("WallMiddle", false);
+                int midwidth = width / 2;
+                tiles[midwidth + 1, 0] = new Tile("WallBottomLeftInv", true);
+                tiles[midwidth, 0] = new Tile("WallMiddle", false);
+                tiles[midwidth-1, 0] = new Tile("WallMiddle", false);
+                tiles[midwidth-2, 0] = new Tile("WallBottomRightInv", true);
             }
             if ((DoorProfile & 0b10) == 0b10)
             {
-                tiles[0, height/2] = new Tile("WallMiddle", false);
+                int midheight = height / 2;
+                tiles[0, midheight+1] = new Tile("WallTopRightInv", true);
+                tiles[0, midheight] = new Tile("WallMiddle", false);
+                tiles[0, midheight-1] = new Tile("WallMiddle", false);
+                tiles[0, midheight-2] = new Tile("WallBottomRightInv", true);
             }
             if ((DoorProfile & 0b100) == 0b100)
             {
-                tiles[width / 2, height-1] = new Tile("WallMiddle", false);
+                int midwidth = width / 2;
+                int bottom = height - 1;
+                tiles[midwidth + 1, bottom] = new Tile("WallTopLeftInv", true);
+                tiles[midwidth, bottom] = new Tile("WallMiddle", false);
+                tiles[midwidth - 1, bottom] = new Tile("WallMiddle", false);
+                tiles[midwidth - 2, bottom] = new Tile("WallTopRightInv", true);
             }
             if ((DoorProfile & 0b1000) == 0b1000)
             {
-                tiles[width-1, height / 2] = new Tile("WallMiddle", false);
+                int midheight = height / 2;
+                int right = width - 1;
+                tiles[right, midheight + 1] = new Tile("WallTopLeftInv", true);
+                tiles[right, midheight] = new Tile("WallMiddle", false);
+                tiles[right, midheight - 1] = new Tile("WallMiddle", false);
+                tiles[right, midheight - 2] = new Tile("WallBottomLeftInv", true);
             }
         }
         public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict)
