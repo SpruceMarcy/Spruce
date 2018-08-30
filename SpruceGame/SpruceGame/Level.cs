@@ -14,6 +14,7 @@ namespace SpruceGame
         // - - - - Variables Global to this Level
         readonly string LevelName;//MB: Unused
         public Room[,] rooms;//MB: The collection of rooms in this level
+        public Door[] doors;
         int width;//MB: The width of the level in rooms
         int height;//MB: The height of the level in rooms
 
@@ -23,6 +24,28 @@ namespace SpruceGame
             this.width = width;
             this.height = height;
             rooms = GenerateLabyrinth(RoomCount,new Vector2(5,5),new Vector2(0,0),seed);//MB: Make a level with placeholder values
+            doors = new Door[] { };
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (rooms[x,y] != null)
+                    {
+                        if ((rooms[x, y].DoorProfile & 0b1) == 0b1)
+                        {
+                            Array.Resize(ref doors, doors.Length + 1);
+                            doors[doors.Length - 1] = new Door("Door", false, new Coord((float)(x + 0.5) * 512, y * 512), new Coord[] { new Coord(x, y), new Coord(x, y - 1) });
+                            //doors[doors.Length - 1].IsVisible = true;
+                        }
+                        if ((rooms[x, y].DoorProfile & 0b1000) == 0b1000)
+                        {
+                            Array.Resize(ref doors, doors.Length + 1);
+                            doors[doors.Length - 1] = new Door("Door", true, new Coord((x+1) * 512, (float)(y + 0.5) * 512), new Coord[] { new Coord(x, y), new Coord(x+1,y) });
+                            //doors[doors.Length - 1].IsVisible = true;
+                        }
+                    }
+                }
+            }
         }
         public void Update(MouseState mouseState, Coord Position)//MB: Runs through each room and updates them
         {
@@ -32,7 +55,25 @@ namespace SpruceGame
                 {
                     if (rooms[x, y] != null)//MB: Prevents null reference exceptions
                     {
-                        rooms[x, y].Update(mouseState,Position + new Coord(x * 32 * 16, y * 32 * 16));
+                        rooms[x, y].Update(mouseState,Position + new Coord(x * 512, y * 512));
+                    }
+                }
+            }
+            foreach (Door door in doors)
+            {
+                door.Update(new Coord(960,540) - Position);
+                if (door.Gap==1)
+                {
+                    foreach (Coord conRoom in door.ConnectingRooms)
+                    {
+                        rooms[(int)conRoom.X, (int)conRoom.Y].Discover();
+                        foreach (Door tempdoor in doors)
+                        {
+                            if (Array.IndexOf<Coord>(tempdoor.ConnectingRooms,conRoom)>-1)
+                            {
+                                tempdoor.IsVisible = true;
+                            }
+                        }
                     }
                 }
             }
@@ -48,6 +89,10 @@ namespace SpruceGame
                         rooms[x,y].Draw(spriteBatch, Position+new Coord(x*32*16,y * 32 * 16),graphicsDevice,TextureDict);
                     }
                 }
+            }
+            foreach (Door door in doors)
+            {
+                door.Draw(spriteBatch,Position,TextureDict);
             }
         }
         /// <summary>
@@ -174,7 +219,7 @@ namespace SpruceGame
                         {
                             DoorProfile |= 0b100;
                         }
-                        rooms[x, y] = new Room(16, 16,DoorProfile);
+                        rooms[x, y] = new Room(16, 16,DoorProfile,new Vector2(x,y)==StartRoom);
                     }
                 }
             }
