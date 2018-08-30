@@ -32,15 +32,17 @@ namespace SpruceGame
         public Tile[,] tiles;//MB: The collection of tiles that make up the room
         public List<Container> Containers;//MB: The collection of containers confined to this room
         public byte DoorProfile;
+        private bool IsVisible;
         int width;//MB: The width of the room in tiles
         int height;//MB: The height of the room in tiles
 
         // - - - - - - - - - - - - - - - - - - -
-        public Room(int width, int height, byte DoorProfile)
+        public Room(int width, int height, byte DoorProfile,bool IsVisible)
         {
             this.width = width;
             this.height = height;
             this.DoorProfile = DoorProfile;
+            this.IsVisible = IsVisible;
             Containers = new List<Container> { new Container("Container","MenuTemplate",new Coord(90,352),new List<Item> { },48)};//MB: Test container
             tiles = new Tile[width, height];
             //MB: The following is a painstaking method of assigning tiles based on location
@@ -115,16 +117,19 @@ namespace SpruceGame
         }
         public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict)
         {
-            for (int y = 0; y < height; y++)
+            if (IsVisible)
             {
-                for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
                 {
-                    tiles[x, y].Draw(spriteBatch,position+new Coord(x*32,y*32),TextureDict);//MB: Draws each tile, one by one
+                    for (int x = 0; x < width; x++)
+                    {
+                        tiles[x, y].Draw(spriteBatch, position + new Coord(x * 32, y * 32), TextureDict);//MB: Draws each tile, one by one
+                    }
                 }
-            }
-            foreach (Container container in Containers)
-            {
-                container.Draw(spriteBatch, position,graphicsDevice,TextureDict);//MB: Draws each container in this room
+                foreach (Container container in Containers)
+                {
+                    container.Draw(spriteBatch, position, graphicsDevice, TextureDict);//MB: Draws each container in this room
+                }
             }
         }
         public void Update(MouseState mouseState, Coord position)
@@ -134,6 +139,10 @@ namespace SpruceGame
                 container.Update(mouseState, position);//MB: Runs the game logic for each container
             }
         }
+        public void Discover()
+        {
+            IsVisible = true;
+        }
     }
     [Serializable]
     public class Door//MB: This allows an instance of this class to be written to file
@@ -141,8 +150,8 @@ namespace SpruceGame
         public string TextureKey;
         private bool IsVertical;
         public bool IsVisible;
-        byte Gap;
-        Coord[] ConnectingRooms;
+        public byte Gap;
+        public  Coord[] ConnectingRooms;
         Coord Position;
         public Door(string TextureKey, bool IsVertical,Coord Position,Coord[] LinkedRooms)
         {
@@ -150,6 +159,7 @@ namespace SpruceGame
             this.IsVertical = IsVertical;
             Gap = 0;
             this.Position = Position;
+            this.ConnectingRooms = LinkedRooms;
         }
         public void Update(Coord PlayerPos)
         {
@@ -171,7 +181,7 @@ namespace SpruceGame
             {
                 if (IsVertical)
                 {
-                    Coord ScreenPos = Offset + Position;// new Coord(940, 540);
+                    Coord ScreenPos = Offset + Position;
                     Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(16, Gap-8)).ToPoint(), new Point(32, 64));
                     Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(16, 8-Gap)).ToPoint(), new Point(32, 64));
                     spriteBatch.Draw(TextureDict[TextureKey], rectangleA, null, Color.White,MathHelper.Pi, new Coord(32, 0).ToVector2(),SpriteEffects.None,0);
@@ -179,7 +189,7 @@ namespace SpruceGame
                 }
                 else
                 {
-                    Coord ScreenPos = Offset + Position;// new Coord(940, 540);
+                    Coord ScreenPos = Offset + Position;
                     Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(8 - Gap,16)).ToPoint(), new Point(32, 64));
                     Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(Gap - 8, 16)).ToPoint(), new Point(32, 64));
                     spriteBatch.Draw(TextureDict[TextureKey], rectangleA, null, Color.White, MathHelper.Pi+MathHelper.PiOver2, new Coord(32, 0).ToVector2(), SpriteEffects.None, 0);

@@ -35,13 +35,13 @@ namespace SpruceGame
                         {
                             Array.Resize(ref doors, doors.Length + 1);
                             doors[doors.Length - 1] = new Door("Door", false, new Coord((float)(x + 0.5) * 512, y * 512), new Coord[] { new Coord(x, y), new Coord(x, y - 1) });
-                            doors[doors.Length - 1].IsVisible = true;
+                            //doors[doors.Length - 1].IsVisible = true;
                         }
                         if ((rooms[x, y].DoorProfile & 0b1000) == 0b1000)
                         {
                             Array.Resize(ref doors, doors.Length + 1);
-                            doors[doors.Length - 1] = new Door("Door", true, new Coord((x+1) * 512, (float)(y + 0.5) * 512), new Coord[] { new Coord(x, y), new Coord(x, y - 1) });
-                            doors[doors.Length - 1].IsVisible = true;
+                            doors[doors.Length - 1] = new Door("Door", true, new Coord((x+1) * 512, (float)(y + 0.5) * 512), new Coord[] { new Coord(x, y), new Coord(x+1,y) });
+                            //doors[doors.Length - 1].IsVisible = true;
                         }
                     }
                 }
@@ -62,6 +62,20 @@ namespace SpruceGame
             foreach (Door door in doors)
             {
                 door.Update(new Coord(960,540) - Position);
+                if (door.Gap==1)
+                {
+                    foreach (Coord conRoom in door.ConnectingRooms)
+                    {
+                        rooms[(int)conRoom.X, (int)conRoom.Y].Discover();
+                        foreach (Door tempdoor in doors)
+                        {
+                            if (Array.IndexOf<Coord>(tempdoor.ConnectingRooms,conRoom)>-1)
+                            {
+                                tempdoor.IsVisible = true;
+                            }
+                        }
+                    }
+                }
             }
         }
         public void Draw(SpriteBatch spriteBatch, Coord Position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> TextureDict)//MB: Draws the level to the screen
@@ -205,7 +219,7 @@ namespace SpruceGame
                         {
                             DoorProfile |= 0b100;
                         }
-                        rooms[x, y] = new Room(16, 16,DoorProfile);
+                        rooms[x, y] = new Room(16, 16,DoorProfile,new Vector2(x,y)==StartRoom);
                     }
                 }
             }
