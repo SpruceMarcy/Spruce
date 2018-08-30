@@ -31,6 +31,7 @@ namespace SpruceGame
         // - - - - Variables Global to this Room
         public Tile[,] tiles;//MB: The collection of tiles that make up the room
         public List<Container> Containers;//MB: The collection of containers confined to this room
+        public byte DoorProfile;
         int width;//MB: The width of the room in tiles
         int height;//MB: The height of the room in tiles
 
@@ -39,7 +40,8 @@ namespace SpruceGame
         {
             this.width = width;
             this.height = height;
-            Containers = new List<Container> { new Container("Container","MenuTemplate",new Coord(90,32*11),new List<Item> { },48)};//MB: Test container
+            this.DoorProfile = DoorProfile;
+            Containers = new List<Container> { new Container("Container","MenuTemplate",new Coord(90,352),new List<Item> { },48)};//MB: Test container
             tiles = new Tile[width, height];
             //MB: The following is a painstaking method of assigning tiles based on location
             tiles[0, 0] = new Tile("WallTopLeft", true);
@@ -130,6 +132,59 @@ namespace SpruceGame
             foreach (Container container in Containers)
             {
                 container.Update(mouseState, position);//MB: Runs the game logic for each container
+            }
+        }
+    }
+    [Serializable]
+    public class Door//MB: This allows an instance of this class to be written to file
+    {
+        public string TextureKey;
+        private bool IsVertical;
+        public bool IsVisible;
+        byte Gap;
+        Coord[] ConnectingRooms;
+        Coord Position;
+        public Door(string TextureKey, bool IsVertical,Coord Position,Coord[] LinkedRooms)
+        {
+            this.TextureKey = TextureKey;
+            this.IsVertical = IsVertical;
+            Gap = 0;
+            this.Position = Position;
+        }
+        public void Update(Coord PlayerPos)
+        {
+            if (Gap>0 && Gap<48)
+            {
+                Gap++;
+            }
+            if ((PlayerPos-Position).ToVector2().Length()<64)
+            {
+                if (Gap==0)
+                {
+                    Gap = 1;
+                }
+            }
+        }
+        public void Draw(SpriteBatch spriteBatch,Coord Offset,Dictionary<string,Texture2D> TextureDict)
+        {
+            if (IsVisible)
+            {
+                if (IsVertical)
+                {
+                    Coord ScreenPos = Offset + Position;// new Coord(940, 540);
+                    Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(16, Gap-8)).ToPoint(), new Point(32, 64));
+                    Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(16, 8-Gap)).ToPoint(), new Point(32, 64));
+                    spriteBatch.Draw(TextureDict[TextureKey], rectangleA, null, Color.White,MathHelper.Pi, new Coord(32, 0).ToVector2(),SpriteEffects.None,0);
+                    spriteBatch.Draw(TextureDict[TextureKey], rectangleB, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
+                }
+                else
+                {
+                    Coord ScreenPos = Offset + Position;// new Coord(940, 540);
+                    Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(8 - Gap,16)).ToPoint(), new Point(32, 64));
+                    Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(Gap - 8, 16)).ToPoint(), new Point(32, 64));
+                    spriteBatch.Draw(TextureDict[TextureKey], rectangleA, null, Color.White, MathHelper.Pi+MathHelper.PiOver2, new Coord(32, 0).ToVector2(), SpriteEffects.None, 0);
+                    spriteBatch.Draw(TextureDict[TextureKey], rectangleB, null, Color.White, MathHelper.PiOver2, Vector2.Zero, SpriteEffects.None, 0);
+                }
             }
         }
     }
