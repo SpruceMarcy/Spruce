@@ -26,5 +26,10 @@
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/PlayerTemp.png</File>
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/MenuTemplate.png</File>
     <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/ContainerTemp.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/Door.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallBottomLeftInv.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallBottomRightInv.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallTopLeftInv.png</File>
+    <File>C:/Users/mdrbr/Source/Repos/Spruce/SpruceGame/SpruceGame/Content/WallTopRightInv.png</File>
   </SourceFiles>
 </SourceFileCollection>
