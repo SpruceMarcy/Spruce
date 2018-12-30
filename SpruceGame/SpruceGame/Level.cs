@@ -115,22 +115,8 @@ namespace SpruceGame
                 for (int y = 0; y < Dimensions.Y; y++)
                 {
                     WeightMatrix[x, y] = new Node {Visited = false};
-                    if (y < Dimensions.Y - 1)
-                    {
-                        WeightMatrix[x, y].North = (uint)new Random(x + y).Next(1, 101);
-                    }
-                    else
-                    {
-                        WeightMatrix[x, y].North = uint.MaxValue;
-                    }
-                    if (x < Dimensions.X - 1)
-                    {
-                        WeightMatrix[x, y].East = (uint)new Random(x + y+ seed[0]<<16+seed[1]<<8+seed[2]).Next(1, 101);
-                    }
-                    else
-                    {
-                        WeightMatrix[x, y].East = uint.MaxValue;
-                    }
+                    WeightMatrix[x, y].North = y < Dimensions.Y - 1 ? (uint)new Random(x + y).Next(1, 101) : uint.MaxValue;
+                    WeightMatrix[x, y].East = x < Dimensions.X - 1 ? (uint)new Random(x + y+ seed[0]<<16+seed[1]<<8+seed[2]).Next(1, 101) : uint.MaxValue;
                 }
             }
             List<Edge> Edges = new List<Edge>();
@@ -264,28 +250,9 @@ public static class Extensions
     {
         Node NodeOne = nodes[(int)edge.One.X, (int)edge.One.Y];
         Node NodeTwo = nodes[(int)edge.Two.X, (int)edge.Two.Y];
-        if (edge.isVertical)
-        {
-            if (edge.One.Y>edge.Two.Y)
-            {
-                return NodeTwo.North;
-            }
-            else
-            {
-                return NodeOne.North;
-            }
-        }
-        else
-        {
-            if (edge.One.X > edge.Two.X)
-            {
-                return NodeTwo.East;
-            }
-            else
-            {
-                return NodeOne.East;
-            }
-        }
+        return edge.isVertical
+            ? edge.One.Y>edge.Two.Y ? NodeTwo.North : NodeOne.North
+            : edge.One.X > edge.Two.X ? NodeTwo.East : NodeOne.East;
     }
     public static void SetEdgeValue(this Node[,] nodes, Edge edge, uint Value)
     {

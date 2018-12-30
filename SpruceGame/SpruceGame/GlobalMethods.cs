@@ -46,26 +46,12 @@ namespace SpruceGame
                     TemplateX = x;
                     if (TemplateX > BorderWidth)
                     {
-                        if (TemplateX > Right - 1)
-                        {
-                            TemplateX = x - Right + BorderWidth + 1;
-                        }
-                        else
-                        {
-                            TemplateX = BorderWidth;
-                        }
+                        TemplateX = TemplateX > Right - 1 ? x - Right + BorderWidth + 1 : BorderWidth;
                     }
                     TemplateY = y;
                     if (TemplateY > BorderHeight)
                     {
-                        if (TemplateY > Bottom - 1)
-                        {
-                            TemplateY = y - Bottom + BorderHeight + 1;
-                        }
-                        else
-                        {
-                            TemplateY = BorderHeight;
-                        }
+                        TemplateY = TemplateY > Bottom - 1 ? y - Bottom + BorderHeight + 1 : BorderHeight;
                     }
                     TextureData[y * rectangle.Width + x] = TemplateData2D[TemplateX, TemplateY];
                 }

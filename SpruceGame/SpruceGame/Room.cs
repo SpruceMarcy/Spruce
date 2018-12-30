@@ -20,10 +20,7 @@ namespace SpruceGame
             this.textureKey = textureKey;
             this.isSolid = isSolid;
         }
-        public void Draw(SpriteBatch spritebatch, Coord Position, Dictionary<string, Texture2D> TextureDict)
-        {
-            spritebatch.Draw(TextureDict[textureKey], Position.ToVector2());
-        }
+        public void Draw(SpriteBatch spritebatch, Coord Position, Dictionary<string, Texture2D> TextureDict) => spritebatch.Draw(TextureDict[textureKey], Position.ToVector2());
     }
     [Serializable]//MB: This allows an instance of this class to be written to file
     public class Room
@@ -139,10 +136,7 @@ namespace SpruceGame
                 container.Update(mouseState, position);//MB: Runs the game logic for each container
             }
         }
-        public void Discover()
-        {
-            IsVisible = true;
-        }
+        public void Discover() => IsVisible = true;
     }
     [Serializable]
     public class Door//MB: This allows an instance of this class to be written to file

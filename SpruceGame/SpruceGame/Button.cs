@@ -93,10 +93,7 @@ namespace SpruceGame
         /// </summary>
         /// <param name="MousePos">The position of a mouse click.</param>
         /// <returns>Boolean</returns>
-        public bool ClickCheck(Point MousePos)
-        {
-            return Enabled && rectangle.Contains(MousePos);
-        }
+        public bool ClickCheck(Point MousePos) => Enabled && rectangle.Contains(MousePos);
     }
 }
 #pragma warning restore CS0618

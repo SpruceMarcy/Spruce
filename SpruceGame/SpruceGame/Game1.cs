@@ -146,8 +146,10 @@ namespace SpruceGame
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.F1))
+            {
                 Exit();//Monogame MB: This means you can press F1 to exit at any time
-                       //MB: Please use these following variables instead of calling any .getstate()
+            }
+            //MB: Please use these following variables instead of calling any .getstate()
             KeyboardState keyboardState = Keyboard.GetState();//MB: This gets the state of all buttons on the keyboard in this frame
             MouseState mouseState = Mouse.GetState();//MB: This gets the postion and button state of the mouse in this frame
             switch (GameState)//MB: This is where State-Dependent game logic goes
@@ -156,7 +158,10 @@ namespace SpruceGame
                     if (PreviousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released) //MB: if mousedown
                     {
                         if (MenuButtons["MainMenuExit"].ClickCheck(mouseState.Position))//MB: If exit button clicked
+                        {
                             Exit();
+                        }
+
                         if (MenuButtons["MainMenuContinue"].ClickCheck(mouseState.Position))//MB: If continue button clicked
                         {
                             BinaryFormatter binaryFormatter = new BinaryFormatter();//MB: This is the thing that deserializes a file
@@ -166,11 +171,19 @@ namespace SpruceGame
                             GameState = GameState.InGame;//MB: Starts the game
                         }
                         if (MenuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked
+                        {
                             GameState = GameState.NewGame;
+                        }
+
                         if (MenuButtons["MainMenuLoadGame"].ClickCheck(mouseState.Position))//MB: If load game button clicked
+                        {
                             GameState = GameState.LoadGame;
+                        }
+
                         if (MenuButtons["MainMenuOptions"].ClickCheck(mouseState.Position))//MB: If options button clicked
+                        {
                             GameState = GameState.Options;
+                        }
                     }
                     break;//MB: This stops the thread running into the next case. Came with the switch.
                 case GameState.NewGame:
@@ -178,7 +191,11 @@ namespace SpruceGame
                     {
                         if (MenuButtons["NewGameStart"].ClickCheck(mouseState.Position))//MB: If start button clicked
                         {
-                            while (SeedBox.Text.Length<6) SeedBox.Text = SeedBox.Text + "0";//MB: This adds 0s to the seed if it isn't 6 characters long
+                            while (SeedBox.Text.Length<6)
+                            {
+                                SeedBox.Text = SeedBox.Text + "0";//MB: This adds 0s to the seed if it isn't 6 characters long
+                            }
+
                             byte[] bytearray = new byte[SeedBox.Text.Length / 2];//MB: This is used to store the seed
                             for (int i = 0; i < bytearray.Length; i++)//MB: This loop takes each two chars from the textbox and puts it in the seed as a byte
                             {
@@ -189,9 +206,14 @@ namespace SpruceGame
                             GameState = GameState.InGame;//MB: Starts the game
                         }
                         if (MenuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
+                        {
                             GameState = GameState.MainMenu;//MB: Go to the main menu
+                        }
+
                         if (MenuButtons["NewGameRandom"].ClickCheck(mouseState.Position))//MB: If Random Seed button clicked
+                        {
                             SeedBox.Text="000000";//MB: Set the seed to 0
+                        }
                     }
                     SeedBox.Update(keyboardState, mouseState);//MB: Runs the textbox logic, updating the seed textbox with the input from this frame
                     MenuButtons["NewGameStart"].Enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(SeedBox.Text, 0);//MB: only allows a new game to start if the seed is a valid hex string
@@ -317,19 +339,13 @@ namespace SpruceGame
         /// </summary>
         /// <param name="percentage">X position out of 100</param>
         /// <returns></returns>
-        private int PercentToX(float percentage)
-        {
-            return (int)(ScreenSize.X * percentage / 100);
-        }
+        private int PercentToX(float percentage) => (int)(ScreenSize.X * percentage / 100);
         /// <summary>
         /// Returns the position on the screen based on proportion rather than absolute value
         /// </summary>
         /// <param name="percentage">Y position out of 100</param>
         /// <returns></returns>
-        private int PercentToY(float percentage)
-        {
-            return (int)(ScreenSize.Y * percentage / 100);
-        }
+        private int PercentToY(float percentage) => (int)(ScreenSize.Y * percentage / 100);
     }
 }
 #pragma warning restore CS0618

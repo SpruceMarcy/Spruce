@@ -69,10 +69,7 @@ namespace SpruceGame
     public class Item
     {
         string DisplayName;//MB: The name of the item as it appears ingame
-        public Item(string DisplayName)
-        {
-            this.DisplayName = DisplayName;
-        }
+        public Item(string DisplayName) => this.DisplayName = DisplayName;
     }
 }
 #pragma warning restore CS0618
