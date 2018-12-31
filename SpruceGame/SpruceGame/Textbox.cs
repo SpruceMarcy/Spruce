@@ -12,60 +12,53 @@ namespace SpruceGame
     /// </summary>
     public class Textbox
     {
-        private Texture2D Texture;//MB: Holds the texture for the sprite without text
+        private Texture2D texture;//MB: Holds the texture for the sprite without text
         readonly Rectangle rectangle;
-        readonly int CharLimit;
-        private bool Selected;
-        public string Text;
-        SpriteFont TextFont;
-        KeyboardState PrevKeyState;
-        MouseState PrevMouseState;
+        readonly int charLimit;
+        private bool selected;
+        public string text;
+        SpriteFont textFont;
+        KeyboardState prevKeyState;
+        MouseState prevMouseState;
 
-        public Textbox(string Text, int CharLimit, Point Position, GraphicsDevice graphicsDevice, Color BorderColour, SpriteFont TextFont)
+        public Textbox(string text, int charLimit, Point position, GraphicsDevice graphicsDevice, Color borderColour, SpriteFont textFont)
         {
             {
-                Vector2 Size = TextFont.MeasureString(new string(' ', CharLimit));
+                Vector2 Size = textFont.MeasureString(new string(' ', charLimit));
                 Size.X += 2;
-                this.rectangle = new Rectangle(Position, Size.ToPoint());
+                this.rectangle = new Rectangle(position, Size.ToPoint());
             }
-            this.Text = Text;
-            this.TextFont = TextFont;
-            this.CharLimit = CharLimit;
-            this.Selected = false;
-            PrevKeyState = Keyboard.GetState();
-            PrevMouseState = Mouse.GetState();
-            Texture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
+            this.text = text;
+            this.textFont = textFont;
+            this.charLimit = charLimit;
+            this.selected = false;
+            prevKeyState = Keyboard.GetState();
+            prevMouseState = Mouse.GetState();
+            texture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
             {
                 Color[] TempData = new Color[rectangle.Width * rectangle.Height];
                 for (int y = 0; y < rectangle.Height; y++)
                 {
-                    TempData[y * rectangle.Width] = BorderColour;
-                    TempData[(y + 1) * rectangle.Width - 1] = BorderColour;
+                    TempData[y * rectangle.Width] = borderColour;
+                    TempData[(y + 1) * rectangle.Width - 1] = borderColour;
                     for (int x = 1; x < rectangle.Width - 1; x++)
                     {
-                        if (y == 0 || y == rectangle.Height - 1)
-                        {
-                            TempData[y * rectangle.Width + x] = BorderColour;
-                        }
-                        else
-                        {
-                            TempData[y * rectangle.Width + x] = Color.White;
-                        }
+                        TempData[y * rectangle.Width + x] = y == 0 || y == rectangle.Height - 1 ? borderColour : Color.White;
                     }
                 }
-                Texture.SetData(TempData);
+                texture.SetData(TempData);
             }
         }
         public void Update(KeyboardState keyboardState, MouseState mouseState)
         {
-            if (Selected)
+            if (selected)
             {
                 Keys[] pressedKeys = keyboardState.GetPressedKeys();
-                foreach (Keys key in PrevKeyState.GetPressedKeys())
+                foreach (Keys key in prevKeyState.GetPressedKeys())
                 {
                     if (Array.IndexOf(pressedKeys, key) == -1)
                     {
-                        String Newstring = Text;
+                        String Newstring = text;
                         //MB: I know this place is a mess. we could use a dictionary? it'd still be quite large...
                         Keys[] ValidCharacters = { Keys.A, Keys.B, Keys.C, Keys.D, Keys.E, Keys.F, Keys.G, Keys.H, Keys.I, Keys.J, Keys.K, Keys.L, Keys.M, Keys.N, Keys.O, Keys.P, Keys.Q, Keys.R, Keys.S, Keys.T, Keys.U, Keys.V, Keys.W, Keys.X, Keys.Y, Keys.Z };
                         if (Array.IndexOf(ValidCharacters, key) > -1)
@@ -364,20 +357,20 @@ namespace SpruceGame
                             }
 
                         }
-                        if (Newstring.Length <= CharLimit)
+                        if (Newstring.Length <= charLimit)
                         {
-                            Text = Newstring;
+                            text = Newstring;
                         }
                     }
                 }
             }
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                Selected = rectangle.Contains(mouseState.Position);
+                selected = rectangle.Contains(mouseState.Position);
 
             }
-            PrevKeyState = keyboardState;
-            PrevMouseState = mouseState;
+            prevKeyState = keyboardState;
+            prevMouseState = mouseState;
         }
         /// <summary>
         /// 
@@ -385,13 +378,13 @@ namespace SpruceGame
         /// <param name="spriteBatch">The SpriteBatch to draw the button to.</param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, rectangle.Location.ToVector2());
-            string DisplayText = Text;
-            if (Text.Length<CharLimit && Selected)
+            spriteBatch.Draw(texture, rectangle.Location.ToVector2());
+            string DisplayText = text;
+            if (text.Length<charLimit && selected)
             {
                 DisplayText += '_';
             }
-            spriteBatch.DrawString(TextFont, DisplayText, new Vector2(rectangle.X + 1, rectangle.Y + 1), Color.Black);
+            spriteBatch.DrawString(textFont, DisplayText, new Vector2(rectangle.X + 1, rectangle.Y + 1), Color.Black);
         }
     }
 }

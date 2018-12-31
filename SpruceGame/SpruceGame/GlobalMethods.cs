@@ -10,16 +10,16 @@ namespace SpruceGame
     //MB: These functions can be called without a class instance as long as the file contains "using static SpruceGame.GlobalMethods;"
     static class GlobalMethods
     {
-        public static Color[] GetRectangleDataFromTemplate(Texture2D Template, Rectangle rectangle)
+        public static Color[] GetRectangleDataFromTemplate(Texture2D template, Rectangle rectangle)
         {
             Color[] TextureData = new Color[rectangle.Width * rectangle.Height]; //MB: An array to hold the color values of the button texture.
-            Color[] TemplateData1D = new Color[Template.Width * Template.Height];//MB: An array to hold the color values of the template texture.
-            Template.GetData(TemplateData1D);//MB: Puts the template data in an array
-            Color[,] TemplateData2D = new Color[Template.Width, Template.Height];//MB: A 2D array to make accessing the color values easier.
+            Color[] TemplateData1D = new Color[template.Width * template.Height];//MB: An array to hold the color values of the template texture.
+            template.GetData(TemplateData1D);//MB: Puts the template data in an array
+            Color[,] TemplateData2D = new Color[template.Width, template.Height];//MB: A 2D array to make accessing the color values easier.
             {//MB: This indented section just formats TemplateData1D into TemplateData2D
                 int X = 0;
                 int Y = 0;
-                int TemplateWidth = Template.Width;
+                int TemplateWidth = template.Width;
                 foreach (Color color in TemplateData1D)
                 {
                     TemplateData2D[X, Y] = color;
@@ -31,8 +31,8 @@ namespace SpruceGame
                     }
                 }
             }
-            int BorderWidth = (Template.Width - 1) / 2;
-            int BorderHeight = (Template.Height - 1) / 2;
+            int BorderWidth = (template.Width - 1) / 2;
+            int BorderHeight = (template.Height - 1) / 2;
             int Bottom = rectangle.Height - BorderHeight;
             int Right = rectangle.Width - BorderWidth;
             int TemplateX = 0;
@@ -61,9 +61,9 @@ namespace SpruceGame
         /// <summary>
         /// returns the corresponding value of a hexadecimal character
         /// </summary>
-        public static byte HexCharToByte(char HexChar)
+        public static byte HexCharToByte(char hexChar)
         {
-            switch (HexChar)
+            switch (hexChar)
             {
                 case '0':
                     return 0;
@@ -106,25 +106,26 @@ namespace SpruceGame
     [Serializable]
     public class Coord //MB: Custom XY grouping kinda like Vector2 or Point but can be written to file
     {
-        public float X;
-        public float Y;
-        public Coord(float X,float Y)
+        public float x;
+        public float y;
+        public Coord(float x,float y)
         {
-            this.X = X;
-            this.Y = Y;
+            this.x = x;
+            this.y = y;
         }
-        public static Coord operator +(Coord coord1, Coord coord2) => new Coord(coord1.X + coord2.X, coord1.Y + coord2.Y);
-        public static Coord operator -(Coord coord1, Coord coord2) => new Coord(coord1.X - coord2.X, coord1.Y - coord2.Y);
-        public static Coord operator /(Coord coord1, float denominator) => new Coord(coord1.X/denominator, coord1.Y/denominator);
-        public static Coord operator *(Coord coord1, float coefficient) => new Coord(coord1.X * coefficient, coord1.Y *coefficient);
-        public Vector2 ToVector2() => new Vector2(X, Y);
-        public Point ToPoint() => new Point((int)X, (int)Y);
+        public static Coord operator +(Coord coord1, Coord coord2) => new Coord(coord1.x + coord2.x, coord1.y + coord2.y);
+        public static Coord operator -(Coord coord1, Coord coord2) => new Coord(coord1.x - coord2.x, coord1.y - coord2.y);
+        public static Coord operator /(Coord coord1, float denominator) => new Coord(coord1.x/denominator, coord1.y/denominator);
+        public static Coord operator *(Coord coord1, float coefficient) => new Coord(coord1.x * coefficient, coord1.y *coefficient);
+        public Vector2 ToVector2() => new Vector2(x, y);
+        public Point ToPoint() => new Point((int)x, (int)y);
 
-        public override bool Equals(object obj)//MB: auto-generatedd
+        public override bool Equals(object obj)//MB: auto-generated
         {
             return obj is Coord coord &&
-                   X == coord.X &&
-                   Y == coord.Y;
+                   x == coord.x &&
+                   y == coord.y;
         }
+        public override int GetHashCode() => base.GetHashCode();//MB: auto-generated
     }
 }

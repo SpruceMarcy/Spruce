@@ -12,19 +12,19 @@ namespace SpruceGame
     public class SaveGame
     {
         // - - - - Variables Global to this Save
-        readonly string SaveName;//MB: No use yet
-        byte[] Seed; //MB: The seed for all randomly determined elements
-        Level LoadedLevel; //MB: The labyrinth that is being played
-        String PlayerTextureKey; //MB: A key for the texture dictionary to retrieve the player texture
-        Coord PlayerPos; //MB: The position of the player in the level. May want to move this to Level
+        readonly string saveName;//MB: No use yet
+        byte[] seed; //MB: The seed for all randomly determined elements
+        Level loadedLevel; //MB: The labyrinth that is being played
+        String playerTextureKey; //MB: A key for the texture dictionary to retrieve the player texture
+        Coord playerPos; //MB: The position of the player in the level. May want to move this to Level
         // - - - - - - - - - - - - - - - - - - -
 
-        public SaveGame(byte[] Seed, Dictionary<string, Texture2D> TextureDict) //MB: on instanciation
+        public SaveGame(byte[] seed, Dictionary<string, Texture2D> textureDict) //MB: on instanciation
         {
-            this.Seed = Seed;
-            LoadedLevel = new Level(5,5,TextureDict,Seed,15); //MB: Create a new placeholder level
-            PlayerPos = new Coord(300, 300); //MB: Sets the player to (300,300) just as a placeholder
-            PlayerTextureKey = "Player";
+            this.seed = seed;
+            loadedLevel = new Level(5,5,textureDict,seed,15); //MB: Create a new placeholder level
+            playerPos = new Coord(300, 300); //MB: Sets the player to (300,300) just as a placeholder
+            playerTextureKey = "Player";
         }
 
         public void Update(KeyboardState keyboardState, MouseState mouseState) //MB: Game Logic (single frame)
@@ -51,19 +51,19 @@ namespace SpruceGame
                 movementVector /= movementVector.ToVector2().Length();//MB: makes it a unit vector so that diagonal movement is not faster
                 movementVector = movementVector + movementVector;//MB: doubles the speed
             }
-            if (!IsSolid(PlayerPos+movementVector))
+            if (!IsSolid(playerPos+movementVector))
             {
-                PlayerPos += movementVector;//MB: Moves to the next location if the new location is not in a wall or something
+                playerPos += movementVector;//MB: Moves to the next location if the new location is not in a wall or something
             }
-            LoadedLevel.Update(mouseState, new Coord(960, 540) - PlayerPos);//MB: run the level logic
+            loadedLevel.Update(mouseState, new Coord(960, 540) - playerPos);//MB: run the level logic
         }
 
-        public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> TextureDict) //MB: frontend stuff
+        public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict) //MB: frontend stuff
         {
-            LoadedLevel.Draw(spriteBatch,new Coord(960,540)-PlayerPos,graphicsDevice,TextureDict); //MB: Draw the level
+            loadedLevel.Draw(spriteBatch,new Coord(960,540)-playerPos,graphicsDevice,textureDict); //MB: Draw the level
             {
                 //MB: This is a bodge-together approach to drawing the player at an angle since the center of rotation is in the top left of a texture by default
-                Texture2D PlayerTexture = TextureDict[PlayerTextureKey];
+                Texture2D PlayerTexture = textureDict[playerTextureKey];
                 float angle = (float)Math.Atan2(Mouse.GetState().Position.Y - 540, Mouse.GetState().Position.X - 960) + MathHelper.PiOver2;
                 Point SpritePosition = new Point((int)(960-(new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Cos(angle+Math.Atan2(PlayerTexture.Height/2, PlayerTexture.Width / 2)))), (int)(540 - (new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Sin(angle + Math.Atan2( PlayerTexture.Height / 2, PlayerTexture.Width / 2)))));
                 spriteBatch.Draw(PlayerTexture, new Rectangle(SpritePosition, new Point(PlayerTexture.Width, PlayerTexture.Height)), null, Color.Black, angle, Vector2.Zero, SpriteEffects.None, 0);
@@ -73,14 +73,14 @@ namespace SpruceGame
         /// Returns whether or not the specified position is occupied, preventing movement.
         /// This could also potentially be moved to Level
         /// </summary>
-        /// <param name="Position">Coordinates in the level to test</param>
+        /// <param name="position">Coordinates in the level to test</param>
         /// <returns></returns>
-        public bool IsSolid(Coord Position)
+        public bool IsSolid(Coord position)
         {
             Room room;
-            room = LoadedLevel.rooms[(int)Math.Floor(Position.X/(16*32)),(int)Math.Floor(Position.Y/ (16 * 32))];//MB: get the room at those coordinates
+            room = loadedLevel.rooms[(int)Math.Floor(position.x/(16*32)),(int)Math.Floor(position.y/ (16 * 32))];//MB: get the room at those coordinates
             Tile tile;
-            tile = room.tiles[(int)Math.Floor((Position.X % (16 * 32)) / 32), (int)Math.Floor((Position.Y % (16 * 32)) / 32)];//MB: get the tile at those coordinates
+            tile = room.tiles[(int)Math.Floor((position.x % (16 * 32)) / 32), (int)Math.Floor((position.y % (16 * 32)) / 32)];//MB: get the tile at those coordinates
             return tile.isSolid;
         }
     }
