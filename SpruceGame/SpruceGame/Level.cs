@@ -35,13 +35,13 @@ namespace SpruceGame
                         {
                             Array.Resize(ref doors, doors.Length + 1);
                             doors[doors.Length - 1] = new Door("Door", false, new Coord((float)(x + 0.5) * 512, y * 512), new Coord[] { new Coord(x, y), new Coord(x, y - 1) });
-                            //doors[doors.Length - 1].IsVisible = true;
+                            doors[doors.Length - 1].isVisible = Array.IndexOf(doors[doors.Length - 1].connectingRooms, new Coord(0, 0)) >= 0;
                         }
                         if ((rooms[x, y].doorProfile & 0b1000) == 0b1000)
                         {
                             Array.Resize(ref doors, doors.Length + 1);
-                            doors[doors.Length - 1] = new Door("Door", true, new Coord((x+1) * 512, (float)(y + 0.5) * 512), new Coord[] { new Coord(x, y), new Coord(x+1,y) });
-                            //doors[doors.Length - 1].IsVisible = true;
+                            doors[doors.Length - 1] = new Door("Door", true, new Coord((x + 1) * 512, (float)(y + 0.5) * 512), new Coord[] { new Coord(x, y), new Coord(x + 1, y) });
+                            doors[doors.Length - 1].isVisible = Array.IndexOf(doors[doors.Length - 1].connectingRooms, new Coord(0, 0)) >= 0;
                         }
                     }
                 }
@@ -260,7 +260,7 @@ public static class Extensions
         {
             if (edge.one.Y > edge.two.Y)
             {
-                nodes[(int)edge.two.X, (int)edge.two.Y].north=value;
+                nodes[(int)edge.two.X, (int)edge.two.Y].north = value;
             }
             else
             {
