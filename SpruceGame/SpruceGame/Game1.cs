@@ -40,8 +40,8 @@ namespace SpruceGame
         SaveGame loadedGame;//MB: The instance of the game in play
         MouseState previousMouseState; //MB: A variable to record what the mouse was doing last frame; to detect changes in button presses
         KeyboardState previousKeyboardState;//MB: A variable to record what the keyboard
-        Dictionary<string, Button> menuButtons;//MB: The collection of buttons that have a fixed occurence
-        Textbox seedBox;//MB: The textbox where the user can enter a level seed when starting a new game
+        Dictionary<string, UIButton> menuButtons;//MB: The collection of buttons that have a fixed occurence
+        UITextbox seedBox;//MB: The textbox where the user can enter a level seed when starting a new game
 
         Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
         //---------------------------------------------------------------------
@@ -72,7 +72,7 @@ namespace SpruceGame
             graphics.ApplyChanges();//MB: Updates the screen size
             gameState = GameState.MainMenu;//MB: This means that the game will start at the main menu
             menuButtons = GenerateMenuButtons();//MB: Instanciates all the menu buttons
-            seedBox = new Textbox("", 6, new Point(910, 500), GraphicsDevice, Color.Green, inputFont);
+            seedBox = new UITextbox("", 6, new Point(910, 500), GraphicsDevice, Color.Green, inputFont);
             previousMouseState = Mouse.GetState();
             previousKeyboardState = Keyboard.GetState();
             //----------------------------------------------------------------------------------------
@@ -316,21 +316,21 @@ namespace SpruceGame
         /// Returns a dictionary of the non-dynamic buttons. Hardcoded content.
         /// </summary>
         /// <returns>Dictionary of buttons</returns>
-        private Dictionary<string, Button> GenerateMenuButtons()
+        private Dictionary<string, UIButton> GenerateMenuButtons()
         {
-            Dictionary<string, Button> MenuButtons = new Dictionary<string, Button>
+            Dictionary<string, UIButton> MenuButtons = new Dictionary<string, UIButton>
             {
-                { "MainMenuContinue", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(1523f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Continue", GraphicsDevice, textures, mainFont) },
-                { "MainMenuNewGame", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2009f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "New Game", GraphicsDevice, textures, mainFont) },
-                { "MainMenuLoadGame", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2495f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Load Game", GraphicsDevice, textures, mainFont) },
-                { "MainMenuOptions", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2981f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Options", GraphicsDevice, textures, mainFont) },
-                { "MainMenuExit", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(3467f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit", GraphicsDevice, textures, mainFont) },
-                { "NewGameStart", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(51), PercentToX(200f/15f), PercentToY(205f/27f)), "Start", GraphicsDevice, textures, mainFont) },
-                { "NewGameBack", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(60), PercentToX(200f/15f), PercentToY(205f/27f)), "Back", GraphicsDevice, textures, mainFont) },
-                { "NewGameRandom", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(37), PercentToX(200f/15f), PercentToY(205f/27f)), "Random Seed", GraphicsDevice, textures, mainFont) },
-                { "PausedContinue", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2009f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Continue", GraphicsDevice, textures, mainFont) },
-                { "PausedSave", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2495f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Save", GraphicsDevice, textures, mainFont) },
-                { "PausedExit", new Button(new Rectangle(PercentToX(130f/3f), PercentToY(2981f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit to menu", GraphicsDevice, textures, mainFont) }
+                { "MainMenuContinue", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(1523f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Continue", GraphicsDevice, textures, mainFont) },
+                { "MainMenuNewGame", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(2009f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "New Game", GraphicsDevice, textures, mainFont) },
+                { "MainMenuLoadGame", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(2495f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Load Game", GraphicsDevice, textures, mainFont) },
+                { "MainMenuOptions", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(2981f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Options", GraphicsDevice, textures, mainFont) },
+                { "MainMenuExit", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(3467f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit", GraphicsDevice, textures, mainFont) },
+                { "NewGameStart", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(51), PercentToX(200f/15f), PercentToY(205f/27f)), "Start", GraphicsDevice, textures, mainFont) },
+                { "NewGameBack", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(60), PercentToX(200f/15f), PercentToY(205f/27f)), "Back", GraphicsDevice, textures, mainFont) },
+                { "NewGameRandom", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(37), PercentToX(200f/15f), PercentToY(205f/27f)), "Random Seed", GraphicsDevice, textures, mainFont) },
+                { "PausedContinue", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(2009f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Continue", GraphicsDevice, textures, mainFont) },
+                { "PausedSave", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(2495f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Save", GraphicsDevice, textures, mainFont) },
+                { "PausedExit", new UIButton(new Rectangle(PercentToX(130f/3f), PercentToY(2981f/54f), PercentToX(200f/15f), PercentToY(205f/27f)), "Exit to menu", GraphicsDevice, textures, mainFont) }
             };
             return MenuButtons;
         }

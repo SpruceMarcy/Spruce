@@ -10,7 +10,7 @@ namespace SpruceGame
     /// <summary>
     /// MB: This class is to encapsulate all features of a box for user text input
     /// </summary>
-    public class Textbox
+    public class UITextbox
     {
         private Texture2D texture;//MB: Holds the texture for the sprite without text
         readonly Rectangle rectangle;
@@ -21,7 +21,7 @@ namespace SpruceGame
         KeyboardState prevKeyState;
         MouseState prevMouseState;
 
-        public Textbox(string text, int charLimit, Point position, GraphicsDevice graphicsDevice, Color borderColour, SpriteFont textFont)
+        public UITextbox(string text, int charLimit, Point position, GraphicsDevice graphicsDevice, Color borderColour, SpriteFont textFont)
         {
             {
                 Vector2 Size = textFont.MeasureString(new string(' ', charLimit));

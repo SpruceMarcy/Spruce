@@ -20,7 +20,7 @@ namespace SpruceGame
         [NonSerialized]//MB: Textures can't be serialized
         private Texture2D menu;//MB: The background texture of the container interface
         string menuTemplateKey;//MB: The string for the texture dictionary, to access the template for generation of the menu graphic.
-        private List<Button> contentList;//MB: Not used, may be unnecessary
+        private List<UIButton> contentList;//MB: Not used, may be unnecessary
         private bool isMenuVisible=false;//MB: By default, the menu doesn't show
         /// <summary>
         /// Initialisation of a container

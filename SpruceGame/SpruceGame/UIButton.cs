@@ -11,7 +11,7 @@ namespace SpruceGame
     /// <summary>
     /// MB: This class is to encapsulate all features of a clickable button
     /// </summary>
-    public class Button
+    public class UIButton
     {
         private Texture2D buttonTexture;//MB: Holds the texture for the sprite without text
         private Texture2D hoverTexture;//MB: Texture for when the mouse is over the button
@@ -32,7 +32,7 @@ namespace SpruceGame
                               /// <param name="graphicsDevice"></param>
                               /// <param name="textureDict"></param>
                               /// <param name="buttonFont">The font of the message on the button.</param>
-        public Button(Rectangle rectangle, string text, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict, SpriteFont buttonFont)
+        public UIButton(Rectangle rectangle, string text, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict, SpriteFont buttonFont)
         {
             this.rectangle = rectangle;
             this.text = text;
