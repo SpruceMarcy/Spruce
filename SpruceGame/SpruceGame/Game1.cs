@@ -37,6 +37,8 @@ namespace SpruceGame
         SpriteFont inputFont;//MB: A monospaced font for text inputs
         GameState gameState;//MB: This variable keeps track of whether the game is live or not etc.
         Vector2 screenSize;//MB: The preferred width and height of the screen (X & Y respectively)
+        float screenTransformScalar;
+        Matrix screenTransform;//MB: A transformation applied after the screen is compiled together
         SaveGame loadedGame;//MB: The instance of the game in play
         MouseState previousMouseState; //MB: A variable to record what the mouse was doing last frame; to detect changes in button presses
         KeyboardState previousKeyboardState;//MB: A variable to record what the keyboard
@@ -75,6 +77,8 @@ namespace SpruceGame
             seedBox = new UITextbox("", 6, new Point(910, 500), GraphicsDevice, Color.Green, inputFont);
             previousMouseState = Mouse.GetState();
             previousKeyboardState = Keyboard.GetState();
+            screenTransformScalar = 1.5f;
+            calculateTransformation();
             //----------------------------------------------------------------------------------------
         }
 
@@ -223,7 +227,17 @@ namespace SpruceGame
                     {
                         gameState = GameState.PausedInGame;//MB: Pause the game
                     }
-                    loadedGame.Update(keyboardState,mouseState);//MB: Run the save-dependent logic for this frame, like physics
+                    else
+                    {
+                        if (mouseState.ScrollWheelValue != previousMouseState.ScrollWheelValue)
+                        {
+                            screenTransformScalar += ( mouseState.ScrollWheelValue-previousMouseState.ScrollWheelValue)/500f;
+                            screenTransformScalar = MathHelper.Max(MathHelper.Min(screenTransformScalar,1.5f),1f);
+                            calculateTransformation();
+                        }
+                        loadedGame.Update(keyboardState,mouseState);//MB: Run the save-dependent logic for this frame, like physics
+                    }
+                    
                     break;
                 case GameState.PausedInGame:
                     if (keyboardState.IsKeyDown(Keys.Escape) && previousKeyboardState.IsKeyUp(Keys.Escape))//MB: If esc key is pressed down
@@ -267,8 +281,9 @@ namespace SpruceGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            
             GraphicsDevice.Clear(Color.Black);//MB: Clears the frame with black
-
+            
             spriteBatch.Begin();//MB: Allows drawing
             switch (gameState)//MB: This is where State-Dependent screen updating goes
             {
@@ -289,7 +304,11 @@ namespace SpruceGame
                     seedBox.Draw(spriteBatch);//MB: Draws the seed textbox
                     break;
                 case GameState.InGame:
+                    spriteBatch.End();
+                    spriteBatch.Begin(transformMatrix: screenTransform);
                     loadedGame.Draw(spriteBatch,GraphicsDevice,textures);//MB: Draws the game to the screen
+                    spriteBatch.End();
+                    spriteBatch.Begin();
                     break;
                 case GameState.PausedInGame:
                     loadedGame.Draw(spriteBatch,GraphicsDevice,textures);//MB: Draws the game to the screen
@@ -306,8 +325,9 @@ namespace SpruceGame
                 default:
                     throw new System.NotImplementedException("Invalid GameState");//MB: This should never run, which is why it'd throw an error
             }
-            spriteBatch.Draw(textures["Cursor"], new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y));//MB: Draws the cursor at the mouse position
 
+            spriteBatch.Draw(textures["Cursor"], new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y));//MB: Draws the cursor at the mouse position
+           
             spriteBatch.End();//MB: Drawing not allowed after this
             base.Draw(gameTime);//Monogame
         }
@@ -346,6 +366,11 @@ namespace SpruceGame
         /// <param name="percentage">Y position out of 100</param>
         /// <returns></returns>
         private int PercentToY(float percentage) => (int)(screenSize.Y * percentage / 100);
+
+        private void calculateTransformation()
+        {
+            screenTransform = Matrix.CreateScale(screenTransformScalar) * Matrix.CreateTranslation(new Vector3(-960, -540, 0) * (screenTransformScalar - 1.0f));
+        }
     }
 }
 #pragma warning restore CS0618

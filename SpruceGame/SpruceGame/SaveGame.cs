@@ -65,8 +65,8 @@ namespace SpruceGame
                 //MB: This is a bodge-together approach to drawing the player at an angle since the center of rotation is in the top left of a texture by default
                 Texture2D PlayerTexture = textureDict[playerTextureKey];
                 float angle = (float)Math.Atan2(Mouse.GetState().Position.Y - 540, Mouse.GetState().Position.X - 960) + MathHelper.PiOver2;
-                Point SpritePosition = new Point((int)(960-(new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Cos(angle+Math.Atan2(PlayerTexture.Height/2, PlayerTexture.Width / 2)))), (int)(540 - (new Vector2(PlayerTexture.Width, PlayerTexture.Height).Length()/2 * Math.Sin(angle + Math.Atan2( PlayerTexture.Height / 2, PlayerTexture.Width / 2)))));
-                spriteBatch.Draw(PlayerTexture, new Rectangle(SpritePosition, new Point(PlayerTexture.Width, PlayerTexture.Height)), null, Color.Black, angle, Vector2.Zero, SpriteEffects.None, 0);
+                Point SpritePosition = new Point(960,540);
+                spriteBatch.Draw(PlayerTexture, new Rectangle(SpritePosition, new Point(PlayerTexture.Width, PlayerTexture.Height)), null, Color.Black, angle, new Vector2(PlayerTexture.Width/2f,PlayerTexture.Height/2f), SpriteEffects.None, 0);
             }
         }
         /// <summary>
