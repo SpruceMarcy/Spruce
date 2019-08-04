@@ -133,7 +133,7 @@ namespace SpruceGame
         public static Coord operator -(Coord coord1, Coord coord2) => new Coord(coord1.x - coord2.x, coord1.y - coord2.y);
         public static Coord operator /(Coord coord1, float denominator) => new Coord(coord1.x/denominator, coord1.y/denominator);
         public static Coord operator *(Coord coord1, float coefficient) => new Coord(coord1.x * coefficient, coord1.y *coefficient);
-        public Vector2 ToVector2() => new Vector2(x, y);
+        public Vector2 ToVector2() => new Vector2((int)x, (int)y);
         public Point ToPoint() => new Point((int)x, (int)y);
 
         public override bool Equals(object obj)//MB: auto-generated

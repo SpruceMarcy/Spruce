@@ -25,6 +25,7 @@ namespace SpruceGame
             player = new Player();
             player.pos = new Coord(300, 300); //MB: Sets the player to (300,300) just as a placeholder
             player.textureKey = "Player";
+            player.legsKey = "PlayerLegs";
         }
 
         public void Update(KeyboardState keyboardState, MouseState mouseState) //MB: Game Logic (single frame)
@@ -73,7 +74,7 @@ namespace SpruceGame
                     break;
                 }
             }
-            player.Update(keyboardState,mouseState);
+            player.Update(keyboardState,mouseState,movementVector);
             loadedLevel.Update(mouseState, new Coord(960, 540) - player.pos);//MB: run the level logic
         }
 
