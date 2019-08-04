@@ -112,7 +112,7 @@ namespace SpruceGame
                 tiles[right, midheight - 2] = new Tile("WallBottomLeftInv", true);
             }
         }
-        public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict)
+        public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict, MapDataPack dataPack)
         {
             if (isVisible)
             {
@@ -120,12 +120,12 @@ namespace SpruceGame
                 {
                     for (int x = 0; x < width; x++)
                     {
-                        tiles[x, y].Draw(spriteBatch, position + new Coord(x * 32, y * 32), textureDict);//MB: Draws each tile, one by one
+                        tiles[x, y].Draw(spriteBatch, position + new Coord(x * 32, y * 32), dataPack.textureDict);//MB: Draws each tile, one by one
                     }
                 }
                 foreach (Container container in containers)
                 {
-                    container.Draw(spriteBatch, position, graphicsDevice, textureDict);//MB: Draws each container in this room
+                    container.Draw(spriteBatch, position, graphicsDevice, dataPack.textureDict);//MB: Draws each container in this room
                 }
             }
         }
@@ -137,6 +137,7 @@ namespace SpruceGame
             }
         }
         public void Discover() => isVisible = true;
+        public static Room NONE = new Room(16,16,0,false);
     }
     [Serializable]
     public class Door//MB: This allows an instance of this class to be written to file
@@ -169,25 +170,33 @@ namespace SpruceGame
                 }
             }
         }
-        public void Draw(SpriteBatch spriteBatch,Coord offset,Dictionary<string,Texture2D> textureDict)
+        public void Draw(SpriteBatch spriteBatch, Coord offset, Dictionary<string,Texture2D> textureDict, MapDataPack dataPack)
         {
             if (isVisible)
             {
                 if (isVertical)
                 {
                     Coord ScreenPos = offset + position;
-                    Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(16, gap-8)).ToPoint(), new Point(32, 64));
-                    Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(16, 8-gap)).ToPoint(), new Point(32, 64));
-                    spriteBatch.Draw(textureDict[textureKey], rectangleA, null, Color.White,MathHelper.Pi, new Coord(32, 0).ToVector2(),SpriteEffects.None,0);
-                    spriteBatch.Draw(textureDict[textureKey], rectangleB, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
+                    Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(8, gap-8)).ToPoint(), new Point(16, 64-gap));
+                    Rectangle rectangle1 = new Rectangle(0,0, 32, 64-gap);
+                    int doorText1 = SpruceContentManager.newTexture2D(textureDict[textureKey].Crop(rectangle1));
+                    Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(8, 8-gap)).ToPoint(), new Point(16, 64-gap));
+                    Rectangle rectangle2 = new Rectangle(0, 0, 32, 64 - gap);
+                    int doorText2 = SpruceContentManager.newTexture2D(textureDict[textureKey].Crop(rectangle2));
+                    spriteBatch.Draw(SpruceContentManager.get(doorText1), rectangleA, null, Color.White,MathHelper.Pi, new Coord(32, 0).ToVector2(),SpriteEffects.None,0);
+                    spriteBatch.Draw(SpruceContentManager.get(doorText2), rectangleB, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
                 }
                 else
                 {
                     Coord ScreenPos = offset + position;
-                    Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(8 - gap,16)).ToPoint(), new Point(32, 64));
-                    Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(gap - 8, 16)).ToPoint(), new Point(32, 64));
-                    spriteBatch.Draw(textureDict[textureKey], rectangleA, null, Color.White, MathHelper.Pi+MathHelper.PiOver2, new Coord(32, 0).ToVector2(), SpriteEffects.None, 0);
-                    spriteBatch.Draw(textureDict[textureKey], rectangleB, null, Color.White, MathHelper.PiOver2, Vector2.Zero, SpriteEffects.None, 0);
+                    Rectangle rectangleA = new Rectangle((ScreenPos - new Coord(8 - gap,8)).ToPoint(), new Point(16, 64-gap));
+                    Rectangle rectangle1 = new Rectangle(0, 0, 32, 64 - gap);
+                    int doorText1 = SpruceContentManager.newTexture2D(textureDict[textureKey].Crop(rectangle1));
+                    Rectangle rectangleB = new Rectangle((ScreenPos - new Coord(gap - 8, 8)).ToPoint(), new Point(16, 64-gap));
+                    Rectangle rectangle2 = new Rectangle(0, 0, 32 ,64 - gap);
+                    int doorText2 = SpruceContentManager.newTexture2D(textureDict[textureKey].Crop(rectangle2)); ;
+                    spriteBatch.Draw(SpruceContentManager.get(doorText1), rectangleA, null, Color.White, MathHelper.Pi+MathHelper.PiOver2, new Coord(32, 0).ToVector2(), SpriteEffects.None, 0);
+                    spriteBatch.Draw(SpruceContentManager.get(doorText2), rectangleB, null, Color.White, MathHelper.PiOver2, Vector2.Zero, SpriteEffects.None, 0);
                 }
             }
         }

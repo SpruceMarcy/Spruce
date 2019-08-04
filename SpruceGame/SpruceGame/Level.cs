@@ -13,16 +13,26 @@ namespace SpruceGame
     {
         // - - - - Variables Global to this Level
         readonly string levelName;//MB: Unused
-        public Room[,] rooms;//MB: The collection of rooms in this level
+        private Room[,] rooms;//MB: The collection of rooms in this level
+        private string dataPackKey;
+        public Room getRoom(int x, int y)
+        {
+            if (0<=x && x<rooms.GetLength(0) && 0 <= y && y < rooms.GetLength(1))
+            {
+                return rooms[x,y];
+            }
+            return Room.NONE;
+        }
         public Door[] doors;
         int width;//MB: The width of the level in rooms
         int height;//MB: The height of the level in rooms
 
         // - - - - - - - - - - - - - - - - - - -
-        public Level(int width, int height, Dictionary<string, Texture2D> textureDict,byte[] seed,int roomCount)//MB: On instanciation
+        public Level(int width, int height, string mapDataPackKey,byte[] seed,int roomCount)//MB: On instanciation
         {
             this.width = width;
             this.height = height;
+            this.dataPackKey = mapDataPackKey;
             rooms = GenerateLabyrinth(roomCount,new Vector2(5,5),new Vector2(0,0),seed);//MB: Make a level with placeholder values
             doors = new Door[] { };
             for (int x = 0; x < width; x++)
@@ -78,7 +88,7 @@ namespace SpruceGame
                 }
             }
         }
-        public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> textureDict)//MB: Draws the level to the screen
+        public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> textureDict,Dictionary<string,MapDataPack> dataPacks)//MB: Draws the level to the screen
         {
             for (int x = 0; x < width; x++)
             {
@@ -86,13 +96,13 @@ namespace SpruceGame
                 {
                     if (rooms[x,y] != null)//MB: Prevents null reference exceptions
                     {
-                        rooms[x,y].Draw(spriteBatch, position+new Coord(x*32*16,y * 32 * 16),graphicsDevice,textureDict);
+                        rooms[x,y].Draw(spriteBatch, position+new Coord(x*32*16,y * 32 * 16),graphicsDevice,textureDict, dataPacks[dataPackKey]);
                     }
                 }
             }
             foreach (Door door in doors)
             {
-                door.Draw(spriteBatch,position,textureDict);
+                door.Draw(spriteBatch,position,textureDict, dataPacks[dataPackKey]);
             }
         }
         /// <summary>

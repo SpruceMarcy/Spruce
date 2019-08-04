@@ -33,6 +33,7 @@ namespace SpruceGame
 
         //--------MB: Declare variables here that are global to the game--------
         Dictionary<string, Texture2D> textures;//MB: This variable stores all textures, accessible with a string identifier
+        Dictionary<string, MapDataPack> mapDataPacks;
         SpriteFont mainFont;//MB: This variable holds the font to be used for buttons etc
         SpriteFont inputFont;//MB: A monospaced font for text inputs
         GameState gameState;//MB: This variable keeps track of whether the game is live or not etc.
@@ -114,11 +115,15 @@ namespace SpruceGame
                 { "WallBottomRightInv", Content.Load<Texture2D>("WallBottomRightInv") },
                 { "WallBottomLeftInv", Content.Load<Texture2D>("WallBottomLeftInv") },
                 { "Door", Content.Load<Texture2D>("Door")},
-                { "Container",Content.Load<Texture2D>("ContainerTemp") },
-                { "Player",Content.Load<Texture2D>("PlayerTemp")},
-                { "MenuTemplate",Content.Load<Texture2D>("MenuTemplate")},
-                { "PauseMenu",new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(767f/27f))}
+                { "Container", Content.Load<Texture2D>("ContainerTemp") },
+                { "Player", Content.Load<Texture2D>("PlayerTemp")},
+                { "MenuTemplate", Content.Load<Texture2D>("MenuTemplate")},
+                { "PauseMenu", new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(767f/27f))}
             };//MB: Initializes the texture dictionary
+            mapDataPacks = new Dictionary<string, MapDataPack>
+            {
+                { "Federation", new MapDataPack(textures) }
+            };
             textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(767f / 27f))));//MB: This makes the pause menu background
 
             mainFont = Content.Load<SpriteFont>("MainFont");
@@ -173,6 +178,7 @@ namespace SpruceGame
                             loadedGame= (SaveGame)binaryFormatter.Deserialize(stream);//MB: Reads the SaveGame stored in file
                             stream.Close();//MB: Closes the file
                             gameState = GameState.InGame;//MB: Starts the game
+                            MediaPlayer.Stop();
                         }
                         if (menuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked
                         {
@@ -205,9 +211,10 @@ namespace SpruceGame
                             {
                                 bytearray[i] = (byte)((HexCharToByte(seedBox.text[2 * i]) * 16) + HexCharToByte(seedBox.text[(2 * i) + 1]));
                             }
-                            loadedGame = new SaveGame(bytearray, textures);//MB: Instanciates a new game
+                            loadedGame = new SaveGame(bytearray, textures,"Federation");//MB: Instanciates a new game
                             Window.Title = bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();//MB: Puts the seed in the window bar at the top of the screen
                             gameState = GameState.InGame;//MB: Starts the game
+                            MediaPlayer.Stop();
                         }
                         if (menuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
                         {
@@ -281,9 +288,8 @@ namespace SpruceGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            
+            SpruceContentManager.Dispose();
             GraphicsDevice.Clear(Color.Black);//MB: Clears the frame with black
-            
             spriteBatch.Begin();//MB: Allows drawing
             switch (gameState)//MB: This is where State-Dependent screen updating goes
             {
@@ -306,12 +312,16 @@ namespace SpruceGame
                 case GameState.InGame:
                     spriteBatch.End();
                     spriteBatch.Begin(transformMatrix: screenTransform);
-                    loadedGame.Draw(spriteBatch,GraphicsDevice,textures);//MB: Draws the game to the screen
+                    loadedGame.Draw(spriteBatch,GraphicsDevice,textures,mapDataPacks);//MB: Draws the game to the screen
                     spriteBatch.End();
                     spriteBatch.Begin();
                     break;
                 case GameState.PausedInGame:
-                    loadedGame.Draw(spriteBatch,GraphicsDevice,textures);//MB: Draws the game to the screen
+                    spriteBatch.End();
+                    spriteBatch.Begin(transformMatrix: screenTransform);
+                    loadedGame.Draw(spriteBatch, GraphicsDevice, textures, mapDataPacks);//MB: Draws the game to the screen
+                    spriteBatch.End();
+                    spriteBatch.Begin();
                     spriteBatch.Draw(textures["PauseMenu"], new Vector2(PercentToX(124f/3f),PercentToY(1933/54f)));//MB: Draws the background to the pause menu
                     foreach (string ButtonName in new string[] { "PausedContinue", "PausedSave", "PausedExit" }) //MB: Draws the buttons
                     {

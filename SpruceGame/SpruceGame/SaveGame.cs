@@ -15,14 +15,14 @@ namespace SpruceGame
         readonly string saveName;//MB: No use yet
         byte[] seed; //MB: The seed for all randomly determined elements
         Level loadedLevel; //MB: The labyrinth that is being played
-        String playerTextureKey; //MB: A key for the texture dictionary to retrieve the player texture
+        string playerTextureKey; //MB: A key for the texture dictionary to retrieve the player texture
         Coord playerPos; //MB: The position of the player in the level. May want to move this to Level
         // - - - - - - - - - - - - - - - - - - -
 
-        public SaveGame(byte[] seed, Dictionary<string, Texture2D> textureDict) //MB: on instanciation
+        public SaveGame(byte[] seed, Dictionary<string, Texture2D> textureDict, string dataPackKey) //MB: on instanciation
         {
             this.seed = seed;
-            loadedLevel = new Level(5,5,textureDict,seed,15); //MB: Create a new placeholder level
+            loadedLevel = new Level(5,5,dataPackKey,seed,15); //MB: Create a new placeholder level
             playerPos = new Coord(300, 300); //MB: Sets the player to (300,300) just as a placeholder
             playerTextureKey = "Player";
         }
@@ -32,35 +32,54 @@ namespace SpruceGame
             Coord movementVector = new Coord(0,0);//MB: This variable records where the player is moving next
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                movementVector +=new Coord(0,-1); //MB: If "W" is pressed, move up (y values go up as you go down the screen)
+                if (!IsSolid(playerPos + new Coord(0,-1)))
+                {
+                    movementVector +=new Coord(0,-1); //MB: If "W" is pressed, move up (y values go up as you go down the screen)
+                }
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                movementVector += new Coord(0, 1); //MB: If "S" is pressed, move down
+                if (!IsSolid(playerPos + new Coord(0, 1)))
+                {
+                    movementVector += new Coord(0, 1);  //MB: If "S" is pressed, move down
+                }
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                movementVector += new Coord(-1, 0); //MB: If "A" is pressed, move left
+                if (!IsSolid(playerPos + new Coord(-1, 0))) //MB: If "A" is pressed, move left
+                {
+                    movementVector += new Coord(-1, 0); //MB: If "A" is pressed, move left
+                }
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                movementVector += new Coord(1,0); //MB: If "D" is pressed, move right
+                if (!IsSolid(playerPos + new Coord(1,0))) //MB: If "D" is pressed, move right
+                {
+                    movementVector += new Coord(1, 0); //MB: If "D" is pressed, move right
+                }
             }
             if (!movementVector.Equals(new Coord(0, 0)))//MB: This avoids div by 0 errors
             {
                 movementVector /= movementVector.ToVector2().Length();//MB: makes it a unit vector so that diagonal movement is not faster
-                movementVector = movementVector + movementVector;//MB: doubles the speed
             }
-            if (!IsSolid(playerPos+movementVector))
+            for (int i = 1; i <= 4; i++)
             {
-                playerPos += movementVector;//MB: Moves to the next location if the new location is not in a wall or something
+                if (!IsSolid(playerPos+movementVector*i))
+                {
+                    playerPos += movementVector;//MB: Moves to the next location if the new location is not in a wall or something
+                }
+                else
+                {
+                    break;
+                }
             }
+
             loadedLevel.Update(mouseState, new Coord(960, 540) - playerPos);//MB: run the level logic
         }
 
-        public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict) //MB: frontend stuff
+        public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict, Dictionary<string, MapDataPack> dataPacks) //MB: frontend stuff
         {
-            loadedLevel.Draw(spriteBatch,new Coord(960,540)-playerPos,graphicsDevice,textureDict); //MB: Draw the level
+            loadedLevel.Draw(spriteBatch,new Coord(960,540)-playerPos,graphicsDevice,textureDict,dataPacks); //MB: Draw the level
             {
                 //MB: This is a bodge-together approach to drawing the player at an angle since the center of rotation is in the top left of a texture by default
                 Texture2D PlayerTexture = textureDict[playerTextureKey];
@@ -78,7 +97,8 @@ namespace SpruceGame
         public bool IsSolid(Coord position)
         {
             Room room;
-            room = loadedLevel.rooms[(int)Math.Floor(position.x/(16*32)),(int)Math.Floor(position.y/ (16 * 32))];//MB: get the room at those coordinates
+            room = loadedLevel.getRoom((int)Math.Floor(position.x/(16*32)),(int)Math.Floor(position.y/ (16 * 32)));//MB: get the room at those coordinates
+            
             Tile tile;
             tile = room.tiles[(int)Math.Floor((position.x % (16 * 32)) / 32), (int)Math.Floor((position.y % (16 * 32)) / 32)];//MB: get the tile at those coordinates
             return tile.isSolid;

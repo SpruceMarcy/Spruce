@@ -41,6 +41,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MapDataPack.cs" />
+    <Compile Include="SpruceContentManager.cs" />
     <Compile Include="UIButton.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="Game1.cs" />

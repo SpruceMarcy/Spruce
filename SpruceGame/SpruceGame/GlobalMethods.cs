@@ -102,6 +102,22 @@ namespace SpruceGame
             }
             return 0;
         }
+        public static Texture2D Crop(this Texture2D image, Rectangle source)
+        {
+            var graphics = image.GraphicsDevice;
+            var ret = new RenderTarget2D(graphics, source.Width, source.Height);
+            var sb = new SpriteBatch(graphics);
+
+            graphics.SetRenderTarget(ret); // draw to image
+            graphics.Clear(new Color(0, 0, 0, 0));
+
+            sb.Begin();
+            sb.Draw(image, Vector2.Zero, source, Color.White);
+            sb.End();
+            sb.Dispose();
+            graphics.SetRenderTarget(null); // set back to main window
+            return (Texture2D)ret;
+        }
     }
     [Serializable]
     public class Coord //MB: Custom XY grouping kinda like Vector2 or Point but can be written to file
