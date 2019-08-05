@@ -102,19 +102,7 @@ namespace SpruceGame
                 { "ButtonDisabled", Content.Load<Texture2D>("ButtonDisabled") },
                 { "ButtonSelected", Content.Load<Texture2D>("ButtonSelected") },
                 { "Background", Content.Load<Texture2D>("Background") },
-                { "WallTopLeft", Content.Load<Texture2D>("WallTopLeft") },
-                { "WallTop", Content.Load<Texture2D>("WallTop") },
-                { "WallTopRight", Content.Load<Texture2D>("WallTopRight") },
-                { "WallRight", Content.Load<Texture2D>("WallRight") },
-                { "WallBottomRight", Content.Load<Texture2D>("WallBottomRight") },
-                { "WallBottom", Content.Load<Texture2D>("WallBottom") },
-                { "WallBottomLeft", Content.Load<Texture2D>("WallBottomLeft") },
-                { "WallLeft", Content.Load<Texture2D>("WallLeft") },
-                { "WallMiddle", Content.Load<Texture2D>("WallMiddle") },
-                { "WallTopLeftInv", Content.Load<Texture2D>("WallTopLeftInv") },
-                { "WallTopRightInv", Content.Load<Texture2D>("WallTopRightInv") },
-                { "WallBottomRightInv", Content.Load<Texture2D>("WallBottomRightInv") },
-                { "WallBottomLeftInv", Content.Load<Texture2D>("WallBottomLeftInv") },
+                { "FederationWalls", Content.Load<Texture2D>("FederationWalls")},
                 { "Door", Content.Load<Texture2D>("Door")},
                 { "Container", Content.Load<Texture2D>("ContainerTemp") },
                 { "Player", Content.Load<Texture2D>("PlayerTemp")},
@@ -124,7 +112,7 @@ namespace SpruceGame
             };//MB: Initializes the texture dictionary
             mapDataPacks = new Dictionary<string, MapDataPack>
             {
-                { "Federation", new MapDataPack(textures) }
+                { "Federation", new MapDataPack(textures["FederationWalls"]) }
             };
             textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(767f / 27f))));//MB: This makes the pause menu background
 
