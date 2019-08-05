@@ -28,12 +28,12 @@ namespace SpruceGame
         int height;//MB: The height of the level in rooms
 
         // - - - - - - - - - - - - - - - - - - -
-        public Level(int width, int height, string mapDataPackKey,byte[] seed,int roomCount)//MB: On instanciation
+        public Level(int width, int height, string mapDataPackKey,byte[] seed,int roomCount,Texture2D roomData)//MB: On instanciation
         {
             this.width = width;
             this.height = height;
             this.dataPackKey = mapDataPackKey;
-            rooms = GenerateLabyrinth(roomCount,new Vector2(5,5),new Vector2(0,0),seed);//MB: Make a level with placeholder values
+            rooms = GenerateLabyrinth(roomCount,new Vector2(5,5),new Vector2(0,0),seed,roomData);//MB: Make a level with placeholder values
             doors = new Door[] { };
             for (int x = 0; x < width; x++)
             {
@@ -115,7 +115,7 @@ namespace SpruceGame
         /// <param name="startRoom">Where the labyrinth will be generated from. Ideal starting room due to guarantee of existance</param>
         /// <param name="seed">Seed for randomness. Will determine layout and contents of rooms</param>
         /// <returns>2D array of rooms</returns>
-        private Room[,] GenerateLabyrinth(int maxRoomCount, Vector2 dimensions, Vector2 startRoom,byte[] seed)
+        private Room[,] GenerateLabyrinth(int maxRoomCount, Vector2 dimensions, Vector2 startRoom,byte[] seed,Texture2D roomData)
         {
             // HERE BE DRAGONS //
             int RoomCount=1;
@@ -215,7 +215,7 @@ namespace SpruceGame
                         {
                             DoorProfile |= 0b100;
                         }
-                        rooms[x, y] = new Room(16, 16,DoorProfile,new Vector2(x,y)==startRoom);
+                        rooms[x, y] = new Room(16, 16,DoorProfile,new Vector2(x,y)==startRoom,roomData);
                     }
                 }
             }

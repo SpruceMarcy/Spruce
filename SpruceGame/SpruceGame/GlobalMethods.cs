@@ -16,21 +16,7 @@ namespace SpruceGame
             Color[] TemplateData1D = new Color[template.Width * template.Height];//MB: An array to hold the color values of the template texture.
             template.GetData(TemplateData1D);//MB: Puts the template data in an array
             Color[,] TemplateData2D = new Color[template.Width, template.Height];//MB: A 2D array to make accessing the color values easier.
-            {//MB: This indented section just formats TemplateData1D into TemplateData2D
-                int X = 0;
-                int Y = 0;
-                int TemplateWidth = template.Width;
-                foreach (Color color in TemplateData1D)
-                {
-                    TemplateData2D[X, Y] = color;
-                    X++;
-                    if (X >= TemplateWidth)
-                    {
-                        X = 0;
-                        Y++;
-                    }
-                }
-            }
+            TemplateData2D = DeserializeArray<Color>(TemplateData1D,template.Width);
             int BorderWidth = (template.Width - 1) / 2;
             int BorderHeight = (template.Height - 1) / 2;
             int Bottom = rectangle.Height - BorderHeight;
@@ -117,6 +103,23 @@ namespace SpruceGame
             sb.Dispose();
             graphics.SetRenderTarget(null); // set back to main window
             return (Texture2D)ret;
+        }
+        public static T[,] DeserializeArray<T>(T[] array,int width)
+        {
+            T[,] returnArray = new T[width,array.Length/width];
+            int X = 0;
+            int Y = 0;
+            foreach (T item in array)
+            {
+                returnArray[X, Y] = item;
+                X++;
+                if (X >= width)
+                {
+                    X = 0;
+                    Y++;
+                }
+            }
+            return returnArray;
         }
     }
     [Serializable]

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Runtime.Serialization.Formatters.Binary;//MB: Allows saving objects to files
 using System.IO;//MB: Allows reading and writing of files
 using static SpruceGame.GlobalMethods;//MB: Allows the calling of the functions in GlobalMethods.cs without an instance or namespace 
+using System.Diagnostics;
 #pragma warning disable CS0618//MB: This disables the depreciated method warning
 
 namespace SpruceGame
@@ -45,7 +46,7 @@ namespace SpruceGame
         KeyboardState previousKeyboardState;//MB: A variable to record what the keyboard
         Dictionary<string, UIButton> menuButtons;//MB: The collection of buttons that have a fixed occurence
         UITextbox seedBox;//MB: The textbox where the user can enter a level seed when starting a new game
-
+        Texture2D roomData;
         Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
         //---------------------------------------------------------------------
 
@@ -129,7 +130,7 @@ namespace SpruceGame
 
             mainFont = Content.Load<SpriteFont>("MainFont");
             inputFont = Content.Load<SpriteFont>("Monospace");
-
+            roomData = Content.Load<Texture2D>("RoomData");
             //---------------------------------------------
             //--------MB: Load anything else here--------
             song = Content.Load<Song>("PlaceholderMusic");
@@ -176,7 +177,7 @@ namespace SpruceGame
                         {
                             BinaryFormatter binaryFormatter = new BinaryFormatter();//MB: This is the thing that deserializes a file
                             Stream stream = File.Open("Save.xml", FileMode.Open);//MB: Opens a file
-                            loadedGame= (SaveGame)binaryFormatter.Deserialize(stream);//MB: Reads the SaveGame stored in file
+                            loadedGame = (SaveGame)binaryFormatter.Deserialize(stream);//MB: Reads the SaveGame stored in file
                             stream.Close();//MB: Closes the file
                             gameState = GameState.InGame;//MB: Starts the game
                             MediaPlayer.Stop();
@@ -212,7 +213,7 @@ namespace SpruceGame
                             {
                                 bytearray[i] = (byte)((HexCharToByte(seedBox.text[2 * i]) * 16) + HexCharToByte(seedBox.text[(2 * i) + 1]));
                             }
-                            loadedGame = new SaveGame(bytearray, textures,"Federation");//MB: Instanciates a new game
+                            loadedGame = new SaveGame(bytearray, textures,roomData);//MB: Instanciates a new game
                             Window.Title = bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();//MB: Puts the seed in the window bar at the top of the screen
                             gameState = GameState.InGame;//MB: Starts the game
                             MediaPlayer.Stop();

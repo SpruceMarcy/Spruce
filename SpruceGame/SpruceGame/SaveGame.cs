@@ -18,10 +18,10 @@ namespace SpruceGame
         Player player;
         // - - - - - - - - - - - - - - - - - - -
 
-        public SaveGame(byte[] seed, Dictionary<string, Texture2D> textureDict, string dataPackKey) //MB: on instanciation
+        public SaveGame(byte[] seed, Dictionary<string, Texture2D> textureDict,Texture2D roomData) //MB: on instanciation
         {
             this.seed = seed;
-            loadedLevel = new Level(5,5,dataPackKey,seed,15); //MB: Create a new placeholder level
+            loadedLevel = new Level(5,5,"Federation",seed,15,roomData); //MB: Create a new placeholder level
             player = new Player();
             player.pos = new Coord(300, 300); //MB: Sets the player to (300,300) just as a placeholder
             player.textureKey = "Player";
