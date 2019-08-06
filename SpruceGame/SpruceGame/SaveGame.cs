@@ -12,16 +12,14 @@ namespace SpruceGame
     public class SaveGame
     {
         // - - - - Variables Global to this Save
-        readonly string saveName;//MB: No use yet
-        byte[] seed; //MB: The seed for all randomly determined elements
-        Level loadedLevel; //MB: The labyrinth that is being played
+        public byte[] seed; //MB: The seed for all randomly determined elements
+        public Level loadedLevel; //MB: The labyrinth that is being played
         Player player;
         // - - - - - - - - - - - - - - - - - - -
 
         public SaveGame(byte[] seed, Dictionary<string, Texture2D> textureDict,Texture2D roomData) //MB: on instanciation
         {
             this.seed = seed;
-            loadedLevel = new Level(5,5,"Federation",seed,15,roomData); //MB: Create a new placeholder level
             player = new Player();
             player.pos = new Coord(300, 300); //MB: Sets the player to (300,300) just as a placeholder
             player.textureKey = "Player";

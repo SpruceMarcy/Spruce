@@ -19,10 +19,11 @@ namespace SpruceGame
     {
         MainMenu = 0,
         NewGame = 1,
-        InGame = 2,
-        PausedInGame = 3,
-        LoadGame = 4,
-        Options = 5
+        LevelSelect = 2,
+        InGame = 3,
+        PausedInGame = 4,
+        LoadGame = 5,
+        Options = 6,
     }
     /// <summary>
     /// This is the main type for your game.
@@ -45,6 +46,7 @@ namespace SpruceGame
         MouseState previousMouseState; //MB: A variable to record what the mouse was doing last frame; to detect changes in button presses
         KeyboardState previousKeyboardState;//MB: A variable to record what the keyboard
         Dictionary<string, UIButton> menuButtons;//MB: The collection of buttons that have a fixed occurence
+        List<UIButton> levelSelectButtons;
         UITextbox seedBox;//MB: The textbox where the user can enter a level seed when starting a new game
         Texture2D roomData;
         Song song;//MB: this holds the music. will be obsolete once a music manager is implemented
@@ -103,6 +105,7 @@ namespace SpruceGame
                 { "ButtonSelected", Content.Load<Texture2D>("ButtonSelected") },
                 { "Background", Content.Load<Texture2D>("Background") },
                 { "FederationWalls", Content.Load<Texture2D>("FederationWalls")},
+                { "PirateWalls", Content.Load<Texture2D>("PirateWalls")},
                 { "Door", Content.Load<Texture2D>("Door")},
                 { "Container", Content.Load<Texture2D>("ContainerTemp") },
                 { "Player", Content.Load<Texture2D>("PlayerTemp")},
@@ -112,13 +115,20 @@ namespace SpruceGame
             };//MB: Initializes the texture dictionary
             mapDataPacks = new Dictionary<string, MapDataPack>
             {
-                { "Federation", new MapDataPack(textures["FederationWalls"]) }
+                { "Federation", new MapDataPack(textures["FederationWalls"]) },
+                { "Pirate", new MapDataPack(textures["PirateWalls"]) }
             };
-            textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(767f / 27f))));//MB: This makes the pause menu background
+            levelSelectButtons = new List<UIButton>();
 
             mainFont = Content.Load<SpriteFont>("MainFont");
             inputFont = Content.Load<SpriteFont>("Monospace");
             roomData = Content.Load<Texture2D>("RoomData");
+
+            foreach (KeyValuePair<string,MapDataPack> mapDataPack in mapDataPacks)
+            {
+                levelSelectButtons.Add(new UIButton(new Rectangle(PercentToX(130f / 3f), PercentToY((1523f+486f*levelSelectButtons.Count) / 54f), PercentToX(200f / 15f), PercentToY(205f / 27f)), mapDataPack.Key, GraphicsDevice, textures, mainFont));
+            }
+            textures["PauseMenu"].SetData<Color>(GetRectangleDataFromTemplate(textures["MenuTemplate"],new Rectangle(0,0, PercentToX(52f / 3f), PercentToY(767f / 27f))));//MB: This makes the pause menu background
             //---------------------------------------------
             //--------MB: Load anything else here--------
             song = Content.Load<Song>("PlaceholderMusic");
@@ -167,7 +177,14 @@ namespace SpruceGame
                             Stream stream = File.Open("Save.xml", FileMode.Open);//MB: Opens a file
                             loadedGame = (SaveGame)binaryFormatter.Deserialize(stream);//MB: Reads the SaveGame stored in file
                             stream.Close();//MB: Closes the file
-                            gameState = GameState.InGame;//MB: Starts the game
+                            if(loadedGame.loadedLevel == null)
+                            {
+                                gameState = GameState.LevelSelect;
+                            }
+                            else
+                            {
+                                gameState = GameState.InGame;//MB: Starts the game
+                            }
                             MediaPlayer.Stop();
                         }
                         if (menuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked
@@ -203,7 +220,7 @@ namespace SpruceGame
                             }
                             loadedGame = new SaveGame(bytearray, textures,roomData);//MB: Instanciates a new game
                             Window.Title = bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();//MB: Puts the seed in the window bar at the top of the screen
-                            gameState = GameState.InGame;//MB: Starts the game
+                            gameState = GameState.LevelSelect;//MB: Starts the game
                             MediaPlayer.Stop();
                         }
                         if (menuButtons["NewGameBack"].ClickCheck(mouseState.Position))//MB: If back button clicked
@@ -218,6 +235,20 @@ namespace SpruceGame
                     }
                     seedBox.Update(keyboardState, mouseState);//MB: Runs the textbox logic, updating the seed textbox with the input from this frame
                     menuButtons["NewGameStart"].enabled = new Regex("^[0123456789ABCDEF]+$").IsMatch(seedBox.text, 0);//MB: only allows a new game to start if the seed is a valid hex string
+                    break;
+                case GameState.LevelSelect:
+                    if(previousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
+                    {
+                        foreach (UIButton button in levelSelectButtons)
+                        {
+                            if (button.ClickCheck(mouseState.Position))
+                            {
+                                loadedGame.loadedLevel= new Level(5, 5, button.text, loadedGame.seed, 15, roomData); //MB: Create a new placeholder level
+                                gameState = GameState.InGame;
+                                break;
+                            }
+                        }
+                    }
                     break;
                 case GameState.InGame:
                     if (keyboardState.IsKeyDown(Keys.Escape) && previousKeyboardState.IsKeyUp(Keys.Escape))//MB: If esc key is pressed down
@@ -298,6 +329,13 @@ namespace SpruceGame
                         menuButtons[ButtonName].Draw(spriteBatch, Mouse.GetState());
                     }
                     seedBox.Draw(spriteBatch);//MB: Draws the seed textbox
+                    break;
+                case GameState.LevelSelect:
+                    spriteBatch.Draw(textures["Background"], new Vector2(0, 0));//MB: Draws the background
+                    foreach (UIButton button in levelSelectButtons)
+                    {
+                        button.Draw(spriteBatch, Mouse.GetState());
+                    }
                     break;
                 case GameState.InGame:
                     spriteBatch.End();
