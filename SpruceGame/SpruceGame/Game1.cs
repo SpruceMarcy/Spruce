@@ -110,6 +110,7 @@ namespace SpruceGame
                 { "Container", Content.Load<Texture2D>("ContainerTemp") },
                 { "Player", Content.Load<Texture2D>("PlayerTemp")},
                 { "PlayerLegs", Content.Load<Texture2D>("Legs")},
+                { "CandyGun", Content.Load<Texture2D>("CandyGun")},
                 { "MenuTemplate", Content.Load<Texture2D>("MenuTemplate")},
                 { "PauseMenu", new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(767f/27f))}
             };//MB: Initializes the texture dictionary

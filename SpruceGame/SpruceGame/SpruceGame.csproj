@@ -55,6 +55,7 @@
     <Compile Include="Room.cs" />
     <Compile Include="SaveGame.cs" />
     <Compile Include="UITextbox.cs" />
+    <Compile Include="Weapon.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

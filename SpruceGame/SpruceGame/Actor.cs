@@ -14,12 +14,15 @@ namespace SpruceGame
         public string textureKey; //MB: A key for the texture dictionary to retrieve the player texture
         public string legsKey;
         public Coord pos; //MB: The position of the player in the level. May want to move this to Level
+        private Coord target=new Coord(0,0);
+        public Weapon primaryWeapon;
         float angle;
         float legsAngle;
         protected double anim = 0;
         protected bool foot = true;
         protected void Update( Coord target, Coord movement)
         {
+            this.target = target;
             angle = (float)Math.Atan2(target.y - 540, target.x - 960) + MathHelper.PiOver2;
             if (movement.y == 0 && movement.x == 0)
             {
@@ -55,6 +58,8 @@ namespace SpruceGame
             Texture2D LegsTexture = textureDict[legsKey];
             Point SpritePosition = new Point(960, 540);
             spriteBatch.Draw(LegsTexture, new Rectangle(SpritePosition, new Point(LegsTexture.Width, (int)(LegsTexture.Height * Math.Abs(anim)))), null, Color.White, Math.Abs(MathHelper.WrapAngle(angle - legsAngle)) < MathHelper.PiOver2 ? legsAngle : legsAngle + MathHelper.Pi, new Vector2(LegsTexture.Width / 2f, LegsTexture.Height / 2f), anim < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Coord weaponPos = (SpritePosition.ToVector2() + Vector2.Transform(new Vector2(8, 0), Matrix.CreateRotationZ(angle))).toCoord();
+            primaryWeapon.Draw(spriteBatch,graphicsDevice,textureDict, weaponPos,(float)Math.Atan2(target.x-weaponPos.x,weaponPos.y-target.y));
             spriteBatch.Draw(PlayerTexture, new Rectangle(SpritePosition, new Point(PlayerTexture.Width, PlayerTexture.Height)), null, Color.White, angle, new Vector2(PlayerTexture.Width / 2f, PlayerTexture.Height / 2f), SpriteEffects.None, 0);
         }
     }
