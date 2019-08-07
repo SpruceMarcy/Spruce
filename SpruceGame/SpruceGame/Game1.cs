@@ -177,14 +177,7 @@ namespace SpruceGame
                             Stream stream = File.Open("Save.xml", FileMode.Open);//MB: Opens a file
                             loadedGame = (SaveGame)binaryFormatter.Deserialize(stream);//MB: Reads the SaveGame stored in file
                             stream.Close();//MB: Closes the file
-                            if(loadedGame.loadedLevel == null)
-                            {
-                                gameState = GameState.LevelSelect;
-                            }
-                            else
-                            {
-                                gameState = GameState.InGame;//MB: Starts the game
-                            }
+                            gameState = loadedGame.loadedLevel == null ? GameState.LevelSelect : GameState.InGame;
                             MediaPlayer.Stop();
                         }
                         if (menuButtons["MainMenuNewGame"].ClickCheck(mouseState.Position))//MB: If new game button clicked

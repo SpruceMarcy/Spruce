@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Actor.cs" />
     <Compile Include="MapDataPack.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="SpruceContentManager.cs" />

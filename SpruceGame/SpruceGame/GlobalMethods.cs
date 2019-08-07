@@ -104,6 +104,14 @@ namespace SpruceGame
             graphics.SetRenderTarget(null); // set back to main window
             return (Texture2D)ret;
         }
+        public static Coord toCoord(this Vector2 vector2)
+        {
+            return new Coord(vector2.X, vector2.Y);
+        }
+        public static Coord toCoord(this Point vector2)
+        {
+            return new Coord(vector2.X, vector2.Y);
+        }
         public static T[,] DeserializeArray<T>(T[] array,int width)
         {
             T[,] returnArray = new T[width,array.Length/width];
@@ -138,7 +146,6 @@ namespace SpruceGame
         public static Coord operator *(Coord coord1, float coefficient) => new Coord(coord1.x * coefficient, coord1.y *coefficient);
         public Vector2 ToVector2() => new Vector2((int)x, (int)y);
         public Point ToPoint() => new Point((int)x, (int)y);
-
         public override bool Equals(object obj)//MB: auto-generated
         {
             return obj is Coord coord &&
