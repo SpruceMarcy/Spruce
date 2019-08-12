@@ -24,6 +24,7 @@ namespace SpruceGame
             return Room.NONE;
         }
         public Door[] doors;
+        public List<Projectile> projectiles;
         int width;//MB: The width of the level in rooms
         int height;//MB: The height of the level in rooms
 
@@ -35,6 +36,7 @@ namespace SpruceGame
             this.dataPackKey = mapDataPackKey;
             rooms = GenerateLabyrinth(roomCount,new Vector2(5,5),new Vector2(0,0),seed,roomData);//MB: Make a level with placeholder values
             doors = new Door[] { };
+            projectiles = new List<Projectile>();
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -87,6 +89,24 @@ namespace SpruceGame
                     }
                 }
             }
+            List<Projectile> projectileDisposeList = new List<Projectile>();
+            foreach (Projectile projectile in projectiles)
+            {
+                for (int i = 1; i <= projectile.speed; i++)
+                {
+                    if (IsSolid(projectile.position + (projectile.movement* i/projectile.speed)))
+                    {
+                        projectileDisposeList.Add(projectile);
+                        break;
+                    }
+                }
+                projectile.Update(mouseState);
+            }
+            foreach (Projectile projectile in projectileDisposeList)
+            {
+                projectiles.Remove(projectile);
+            }
+            projectileDisposeList.Clear();
         }
         public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> textureDict,Dictionary<string,MapDataPack> dataPacks)//MB: Draws the level to the screen
         {
@@ -104,6 +124,25 @@ namespace SpruceGame
             {
                 door.Draw(spriteBatch,position,textureDict, dataPacks[dataPackKey]);
             }
+            foreach (Projectile projectile in projectiles)
+            {
+                projectile.Draw(spriteBatch,position,graphicsDevice,textureDict);
+            }
+        }
+        /// <summary>
+        /// Returns whether or not the specified position is occupied, preventing movement.
+        /// This could also potentially be moved to Level
+        /// </summary>
+        /// <param name="position">Coordinates in the level to test</param>
+        /// <returns></returns>
+        public bool IsSolid(Coord position)
+        {
+            Room room;
+            room = getRoom((int)Math.Floor(position.x / (16 * 32)), (int)Math.Floor(position.y / (16 * 32)));//MB: get the room at those coordinates
+
+            Tile tile;
+            tile = room.tiles[(int)Math.Floor((position.x % (16 * 32)) / 32), (int)Math.Floor((position.y % (16 * 32)) / 32)];//MB: get the tile at those coordinates
+            return tile.isSolid;
         }
         /// <summary>
         /// Generates a labyrinth of rooms using a partial Prim's algorithm on a randomised graph.

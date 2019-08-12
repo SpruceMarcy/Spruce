@@ -9,21 +9,29 @@ using System.Threading.Tasks;
 
 namespace SpruceGame
 {
-    class Weapon
+    [Serializable]
+    public class Weapon
     {
-        string textureKey;
-        public Weapon(string textureKey)
+        public string textureKey;
+        string projectileKey;
+        public float angle;
+        public Weapon(string textureKey, string projectileKey)
         {
             this.textureKey = textureKey;
+            this.projectileKey = projectileKey;
         }
-        public void Update(MouseState mouseState, Coord movement)
+        public void Update(float angle)
         {
-            
+            this.angle = angle;
         }
-        public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict,Coord parentPos,float angle)
+        public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict,Coord parentPos)
         {
             Texture2D sprite = textureDict[textureKey];
             spriteBatch.Draw(sprite,new Rectangle(parentPos.ToPoint().X,parentPos.ToPoint().Y,sprite.Width,sprite.Height), null, Color.White, angle, new Vector2(sprite.Width / 2f, sprite.Height), SpriteEffects.None,0);
+        }
+        public Projectile Fire(Coord pos,Coord parentVelocity)
+        {   
+            return new Projectile(projectileKey, angle,6, pos,parentVelocity,Vector2.Transform(Vector2.UnitY, Matrix.CreateRotationZ(MathHelper.Pi + angle)).toCoord());
         }
     }
 }

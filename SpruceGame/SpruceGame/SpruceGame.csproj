@@ -44,6 +44,7 @@
     <Compile Include="Actor.cs" />
     <Compile Include="MapDataPack.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="Projectile.cs" />
     <Compile Include="SpruceContentManager.cs" />
     <Compile Include="UIButton.cs" />
     <Compile Include="Container.cs" />

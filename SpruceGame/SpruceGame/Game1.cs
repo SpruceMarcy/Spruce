@@ -111,6 +111,7 @@ namespace SpruceGame
                 { "Player", Content.Load<Texture2D>("PlayerTemp")},
                 { "PlayerLegs", Content.Load<Texture2D>("Legs")},
                 { "CandyGun", Content.Load<Texture2D>("CandyGun")},
+                { "CandyBullet", Content.Load<Texture2D>("CandyBullet")},
                 { "MenuTemplate", Content.Load<Texture2D>("MenuTemplate")},
                 { "PauseMenu", new Texture2D(GraphicsDevice,PercentToX(52f/3f),PercentToY(767f/27f))}
             };//MB: Initializes the texture dictionary
@@ -212,7 +213,7 @@ namespace SpruceGame
                             {
                                 bytearray[i] = (byte)((HexCharToByte(seedBox.text[2 * i]) * 16) + HexCharToByte(seedBox.text[(2 * i) + 1]));
                             }
-                            loadedGame = new SaveGame(bytearray, textures,roomData);//MB: Instanciates a new game
+                            loadedGame = new SaveGame(bytearray,roomData);//MB: Instanciates a new game
                             Window.Title = bytearray[0].ToString() + ", " + bytearray[1].ToString() + ", " + bytearray[2].ToString();//MB: Puts the seed in the window bar at the top of the screen
                             gameState = GameState.LevelSelect;//MB: Starts the game
                             MediaPlayer.Stop();
@@ -257,7 +258,7 @@ namespace SpruceGame
                             screenTransformScalar = MathHelper.Max(MathHelper.Min(screenTransformScalar,1.5f),1f);
                             calculateTransformation();
                         }
-                        loadedGame.Update(keyboardState,mouseState);//MB: Run the save-dependent logic for this frame, like physics
+                        loadedGame.Update(keyboardState,mouseState,textures);//MB: Run the save-dependent logic for this frame, like physics
                     }
                     
                     break;

@@ -17,43 +17,43 @@ namespace SpruceGame
         Player player;
         // - - - - - - - - - - - - - - - - - - -
 
-        public SaveGame(byte[] seed, Dictionary<string, Texture2D> textureDict,Texture2D roomData) //MB: on instanciation
+        public SaveGame(byte[] seed,Texture2D roomData) //MB: on instanciation
         {
             this.seed = seed;
             player = new Player();
             player.pos = new Coord(300, 300); //MB: Sets the player to (300,300) just as a placeholder
             player.textureKey = "Player";
             player.legsKey = "PlayerLegs";
-            player.primaryWeapon = new Weapon("CandyGun");
+            player.primaryWeapon = new Weapon("CandyGun","CandyBullet");
         }
 
-        public void Update(KeyboardState keyboardState, MouseState mouseState) //MB: Game Logic (single frame)
+        public void Update(KeyboardState keyboardState, MouseState mouseState, Dictionary<string, Texture2D> textureDict) //MB: Game Logic (single frame)
         {
             Coord movementVector = new Coord(0,0);//MB: This variable records where the player is moving next
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                if (!IsSolid(player.pos + new Coord(0,-1)))
+                if (!loadedLevel.IsSolid(player.pos + new Coord(0,-1)))
                 {
                     movementVector +=new Coord(0,-1); //MB: If "W" is pressed, move up (y values go up as you go down the screen)
                 }
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                if (!IsSolid(player.pos + new Coord(0, 1)))
+                if (!loadedLevel.IsSolid(player.pos + new Coord(0, 1)))
                 {
                     movementVector += new Coord(0, 1);  //MB: If "S" is pressed, move down
                 }
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                if (!IsSolid(player.pos + new Coord(-1, 0))) //MB: If "A" is pressed, move left
+                if (!loadedLevel.IsSolid(player.pos + new Coord(-1, 0))) //MB: If "A" is pressed, move left
                 {
                     movementVector += new Coord(-1, 0); //MB: If "A" is pressed, move left
                 }
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                if (!IsSolid(player.pos + new Coord(1,0))) //MB: If "D" is pressed, move right
+                if (!loadedLevel.IsSolid(player.pos + new Coord(1,0))) //MB: If "D" is pressed, move right
                 {
                     movementVector += new Coord(1, 0); //MB: If "D" is pressed, move right
                 }
@@ -64,7 +64,7 @@ namespace SpruceGame
             }
             for (int i = 1; i <= 4; i++)
             {
-                if (!IsSolid(player.pos+movementVector*i))
+                if (!loadedLevel.IsSolid(player.pos+movementVector*i))
                 {
                     player.pos += movementVector;//MB: Moves to the next location if the new location is not in a wall or something
                 }
@@ -72,6 +72,11 @@ namespace SpruceGame
                 {
                     break;
                 }
+            }
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                Vector2 muzzle = new Vector2(0, textureDict[player.primaryWeapon.textureKey].Bounds.Height);
+                loadedLevel.projectiles.Add(player.primaryWeapon.Fire(player.pos+ Vector2.Transform(new Vector2(8, 0), Matrix.CreateRotationZ(player.angle)).toCoord()-Vector2.Transform(muzzle,Matrix.CreateRotationZ(player.primaryWeapon.angle)).toCoord(),movementVector));
             }
             player.Update(keyboardState,mouseState,movementVector);
             loadedLevel.Update(mouseState, new Coord(960, 540) - player.pos);//MB: run the level logic
@@ -82,21 +87,7 @@ namespace SpruceGame
             loadedLevel.Draw(spriteBatch,new Coord(960,540)-player.pos,graphicsDevice,textureDict,dataPacks); //MB: Draw the level
             player.Draw(spriteBatch,graphicsDevice,textureDict);
         }
-        /// <summary>
-        /// Returns whether or not the specified position is occupied, preventing movement.
-        /// This could also potentially be moved to Level
-        /// </summary>
-        /// <param name="position">Coordinates in the level to test</param>
-        /// <returns></returns>
-        public bool IsSolid(Coord position)
-        {
-            Room room;
-            room = loadedLevel.getRoom((int)Math.Floor(position.x/(16*32)),(int)Math.Floor(position.y/ (16 * 32)));//MB: get the room at those coordinates
-            
-            Tile tile;
-            tile = room.tiles[(int)Math.Floor((position.x % (16 * 32)) / 32), (int)Math.Floor((position.y % (16 * 32)) / 32)];//MB: get the tile at those coordinates
-            return tile.isSolid;
-        }
+
     }
 }
 #pragma warning restore CS0618
