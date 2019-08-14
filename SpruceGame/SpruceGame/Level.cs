@@ -139,10 +139,20 @@ namespace SpruceGame
         {
             Room room;
             room = getRoom((int)Math.Floor(position.x / (16 * 32)), (int)Math.Floor(position.y / (16 * 32)));//MB: get the room at those coordinates
-
             Tile tile;
             tile = room.tiles[(int)Math.Floor((position.x % (16 * 32)) / 32), (int)Math.Floor((position.y % (16 * 32)) / 32)];//MB: get the tile at those coordinates
-            return tile.isSolid;
+            if( Hitbox.IsIn(tile.hitbox,new Coord(position.x % 32, position.y % 32)))
+            {
+                return true;
+            }
+            foreach(Door door in doors)
+            {
+                if (Hitbox.IsIn(door.hitbox, position))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         /// <summary>
         /// Generates a labyrinth of rooms using a partial Prim's algorithm on a randomised graph.

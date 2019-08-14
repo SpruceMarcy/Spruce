@@ -13,13 +13,13 @@ namespace SpruceGame
     public class Tile
     {
         // - - - - Variables Global to this tile
-        public bool isSolid;//MB: Determines whether the player can walk on his tile
+        public Hitbox hitbox;//MB: Determines whether the player can walk on his tile
         string textureKey;//MB: Used with a texture dictionary to get the texture of this tile
         // - - - - - - - - - - - - - - - - - - -
-        public Tile(string textureKey, bool isSolid)
+        public Tile(string textureKey, Hitbox hitbox)
         {
             this.textureKey = textureKey;
-            this.isSolid = isSolid;
+            this.hitbox = hitbox;
         }
         public void Draw(SpriteBatch spritebatch, Coord position, Dictionary<string, Texture2D> textureDict) => spritebatch.Draw(textureDict[textureKey], position.ToVector2());
     }
@@ -50,7 +50,7 @@ namespace SpruceGame
                 {
                     for (int y = 0; y < 16; y++)
                     {
-                        tiles[x, y] = new Tile("WallMiddle", true);
+                        tiles[x, y] = new Tile("WallMiddle", null);
                     }
                 }
             }
@@ -72,56 +72,60 @@ namespace SpruceGame
                         {
                             if (dD[x - 1, y] && dD[x, y - 1] && dD[x, y + 1] && !dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallLeft", true);
+                                tiles[x - 1, y - 1] = new Tile("WallLeft", new Hitbox(new Rectangle(0, 0, 16, 32)));
                             }
                             if (!dD[x - 1, y] && dD[x, y - 1] && dD[x, y + 1] && dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallRight", true);
+                                tiles[x - 1, y - 1] = new Tile("WallRight", new Hitbox(new Rectangle(16, 0, 16, 32)));
                             }
                             if (dD[x - 1, y] && !dD[x, y - 1] && dD[x, y + 1] && dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallBottom", true);
+                                tiles[x - 1, y - 1] = new Tile("WallBottom", new Hitbox(new Rectangle(0, 16, 32, 16)));
                             }
                             if (dD[x - 1, y] && dD[x, y - 1] && !dD[x, y + 1] && dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallTop", true);
+                                tiles[x - 1, y - 1] = new Tile("WallTop", new Hitbox(new Rectangle(0, 0, 32, 16)));
                             }
                             if (dD[x - 1, y] && dD[x, y - 1] && dD[x, y + 1] && dD[x + 1, y] && !dD[x + 1,y + 1])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallTopLeft", true);
+                                tiles[x - 1, y - 1] = new Tile("WallTopLeft", new Hitbox(new Rectangle(0, 0, 32, 16)));
+                                tiles[x - 1, y - 1].hitbox.Add(new Rectangle(0, 0, 16, 32));
                             }
                             if (dD[x - 1, y] && dD[x, y - 1] && dD[x, y + 1] && dD[x + 1, y] && !dD[x - 1, y + 1])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallTopRight", true);
+                                tiles[x - 1, y - 1] = new Tile("WallTopRight", new Hitbox(new Rectangle(0, 0, 32, 16)));
+                                tiles[x - 1, y - 1].hitbox.Add(new Rectangle(16, 0, 16, 32));
                             }
                             if (dD[x - 1, y] && dD[x, y - 1] && dD[x, y + 1] && dD[x + 1, y] && !dD[x + 1, y - 1])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallBottomLeft", true);
+                                tiles[x - 1, y - 1] = new Tile("WallBottomLeft", new Hitbox(new Rectangle(0, 16, 32, 16)));
+                                tiles[x - 1, y - 1].hitbox.Add(new Rectangle(0, 0, 16, 32));
                             }
                             if (dD[x - 1, y] && dD[x, y - 1] && dD[x, y + 1] && dD[x + 1, y] && !dD[x - 1, y - 1])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallBottomRight", true);
+                                tiles[x - 1, y - 1] = new Tile("WallBottomRight", new Hitbox(new Rectangle(0, 16, 32, 16)));
+                                tiles[x - 1, y - 1].hitbox.Add(new Rectangle(16, 0, 16, 32));
                             }
                             if (!dD[x - 1, y] && !dD[x, y - 1] && dD[x, y + 1] && dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallTopLeftInv", true);
+                                tiles[x - 1, y - 1] = new Tile("WallTopLeftInv", new Hitbox(new Rectangle(16, 16, 16, 16)));
                             }
                             if (dD[x - 1, y] && !dD[x, y - 1] && dD[x, y + 1] && !dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallTopRightInv", true);
+                                tiles[x - 1, y - 1] = new Tile("WallTopRightInv", new Hitbox(new Rectangle(0, 16, 16, 16)));
                             }
                             if (!dD[x - 1, y] && dD[x, y - 1] && !dD[x, y + 1] && dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallBottomLeftInv", true);
+                                tiles[x - 1, y - 1] = new Tile("WallBottomLeftInv", new Hitbox(new Rectangle(16, 0, 16, 16)));
                             }
                             if (dD[x - 1, y] && dD[x, y - 1] && !dD[x, y + 1] && !dD[x + 1, y])
                             {
-                                tiles[x - 1, y - 1] = new Tile("WallBottomRightInv", true);
+                                tiles[x - 1, y - 1] = new Tile("WallBottomRightInv", new Hitbox(new Rectangle(0, 0, 16, 16)));
                             }
                         }
                         else
                         {
-                            tiles[x-1, y-1] = new Tile("WallMiddle", false);
+                            tiles[x-1, y-1] = new Tile("WallMiddle", null);
                         }
                         
                     }
@@ -237,6 +241,8 @@ namespace SpruceGame
         public byte gap;
         public Coord[] connectingRooms;
         Coord position;
+        public Hitbox hitbox;
+
         public Door(string textureKey, bool isVertical,Coord position,Coord[] linkedRooms)
         {
             this.textureKey = textureKey;
@@ -244,12 +250,30 @@ namespace SpruceGame
             gap = 0;
             this.position = position;
             this.connectingRooms = linkedRooms;
+            if (isVertical)
+            {
+                this.hitbox = new Hitbox(new Rectangle((int)position.x-16, (int)position.y-64,32,128));
+            }
+            else
+            {
+                this.hitbox = new Hitbox(new Rectangle((int)position.x - 64, (int)position.y - 16, 128, 32));
+            }
         }
         public void Update(Coord playerPos)
         {
             if (gap>0 && gap<48)
             {
                 gap++;
+                if (isVertical)
+                {
+                    this.hitbox = new Hitbox(new Rectangle((int)position.x - 16, (int)position.y - 64, 32, 64-gap));
+                    hitbox.Add(new Rectangle((int)position.x - 16, (int)position.y+gap, 32, 64 - gap));
+                }
+                else
+                {
+                    this.hitbox = new Hitbox(new Rectangle((int)position.x - 64, (int)position.y - 16, 64-gap, 32));
+                    hitbox.Add(new Rectangle((int)position.x + gap, (int)position.y-16,  64 - gap,32));
+                }
             }
             if ((playerPos-position).ToVector2().Length()<64)
             {

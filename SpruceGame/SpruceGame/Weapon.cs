@@ -31,7 +31,7 @@ namespace SpruceGame
         }
         public Projectile Fire(Coord pos,Coord parentVelocity)
         {   
-            return new Projectile(projectileKey, angle,6, pos,parentVelocity,Vector2.Transform(Vector2.UnitY, Matrix.CreateRotationZ(MathHelper.Pi + angle)).toCoord());
+            return new Projectile(projectileKey, angle,10, pos,parentVelocity,Vector2.Transform(Vector2.UnitY, Matrix.CreateRotationZ(MathHelper.Pi + angle)).toCoord());
         }
     }
 }
