@@ -15,6 +15,7 @@ namespace SpruceGame
         public string textureKey; //MB: A key for the texture dictionary to retrieve the player texture
         public string legsKey;
         public Coord pos; //MB: The position of the player in the level. May want to move this to Level
+        public Hitbox hitbox=new Hitbox(new Rectangle(-16,-16,32,32));
         private Coord target=new Coord(0,0);
         private Coord SpritePosition = new Coord(960, 540);
         private Coord weaponPos=new Coord(0,0);

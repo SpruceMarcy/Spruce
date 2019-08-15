@@ -32,28 +32,28 @@ namespace SpruceGame
             Coord movementVector = new Coord(0,0);//MB: This variable records where the player is moving next
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                if (!loadedLevel.IsSolid(player.pos + new Coord(0,-1)))
+                if (!loadedLevel.IsSolid(player.hitbox,player.pos + new Coord(0,-1)))
                 {
                     movementVector +=new Coord(0,-1); //MB: If "W" is pressed, move up (y values go up as you go down the screen)
                 }
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                if (!loadedLevel.IsSolid(player.pos + new Coord(0, 1)))
+                if (!loadedLevel.IsSolid(player.hitbox, player.pos + new Coord(0, 1)))
                 {
                     movementVector += new Coord(0, 1);  //MB: If "S" is pressed, move down
                 }
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                if (!loadedLevel.IsSolid(player.pos + new Coord(-1, 0))) //MB: If "A" is pressed, move left
+                if (!loadedLevel.IsSolid(player.hitbox, player.pos + new Coord(-1, 0))) //MB: If "A" is pressed, move left
                 {
                     movementVector += new Coord(-1, 0); //MB: If "A" is pressed, move left
                 }
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                if (!loadedLevel.IsSolid(player.pos + new Coord(1,0))) //MB: If "D" is pressed, move right
+                if (!loadedLevel.IsSolid(player.hitbox, player.pos + new Coord(1,0))) //MB: If "D" is pressed, move right
                 {
                     movementVector += new Coord(1, 0); //MB: If "D" is pressed, move right
                 }
@@ -64,7 +64,7 @@ namespace SpruceGame
             }
             for (int i = 1; i <= 4; i++)
             {
-                if (!loadedLevel.IsSolid(player.pos+movementVector*i))
+                if (!loadedLevel.IsSolid(player.hitbox, player.pos+movementVector*i))
                 {
                     player.pos += movementVector;//MB: Moves to the next location if the new location is not in a wall or something
                 }

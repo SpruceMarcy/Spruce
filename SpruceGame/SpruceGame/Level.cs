@@ -154,6 +154,39 @@ namespace SpruceGame
             }
             return false;
         }
+        public bool IsSolid(Hitbox hitbox,Coord Origin)
+        {
+            Hitbox offsetHitbox = hitbox.Adjust(Origin);
+            for(int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (Hitbox.Collides(offsetHitbox,new Hitbox(new Rectangle(x*512,y*512,512,512))))
+                    {
+                        Room thisRoom = getRoom(x, y);
+                        for (int tiley = 0; tiley < thisRoom.tiles.GetLength(1); tiley++)
+                        {
+                            for (int tilex = 0; tilex < thisRoom.tiles.GetLength(0); tilex++)
+                            {
+                                Hitbox relativeHitbox = thisRoom.tiles[tilex,tiley].hitbox==null?null: thisRoom.tiles[tilex, tiley].hitbox.Adjust(new Coord(x*512 + (tilex * 32), y*512 + (tiley * 32)));
+                                if (Hitbox.Collides(relativeHitbox, offsetHitbox))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (Door door in doors)
+            {
+                if (Hitbox.Collides(door.hitbox, offsetHitbox))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         /// <summary>
         /// Generates a labyrinth of rooms using a partial Prim's algorithm on a randomised graph.
         /// While a path is guaranteed to  each room, loops are random and more likely at higher room counts.

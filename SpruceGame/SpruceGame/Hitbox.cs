@@ -20,6 +20,15 @@ namespace SpruceGame
             }
         }
         public void Add(Rectangle box) => boxes.Add(new SerializableRectangle(box));
+        public Hitbox Adjust(Coord offset)
+        {
+            Hitbox returnVal = new Hitbox();
+            foreach(SerializableRectangle box in boxes)
+            {
+                returnVal.Add(new Rectangle(box.rectangle.X+(int)offset.x,box.rectangle.Y+(int)offset.y,box.rectangle.Width,box.rectangle.Height));
+            }
+            return returnVal;
+        }
         public static Boolean IsIn(Hitbox hitbox, Coord pos)
         {
             if (hitbox == null)
