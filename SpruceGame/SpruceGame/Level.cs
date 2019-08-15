@@ -17,31 +17,31 @@ namespace SpruceGame
         private string dataPackKey;
         public Room getRoom(int x, int y)
         {
-            if (0<=x && x<rooms.GetLength(0) && 0 <= y && y < rooms.GetLength(1))
+            if (0 <= x && x < rooms.GetLength(0) && 0 <= y && y < rooms.GetLength(1))
             {
-                return rooms[x,y];
+                return rooms[x, y];
             }
             return Room.NONE;
         }
         public Door[] doors;
         public List<Projectile> projectiles;
-        int width;//MB: The width of the level in rooms
-        int height;//MB: The height of the level in rooms
+        public int width;//MB: The width of the level in rooms
+        public int height;//MB: The height of the level in rooms
 
         // - - - - - - - - - - - - - - - - - - -
-        public Level(int width, int height, string mapDataPackKey,byte[] seed,int roomCount,Texture2D roomData)//MB: On instanciation
+        public Level(int width, int height, string mapDataPackKey, byte[] seed, int roomCount, Texture2D roomData)//MB: On instanciation
         {
             this.width = width;
             this.height = height;
             this.dataPackKey = mapDataPackKey;
-            rooms = GenerateLabyrinth(roomCount,new Vector2(5,5),new Vector2(0,0),seed,roomData);//MB: Make a level with placeholder values
+            rooms = GenerateLabyrinth(roomCount, new Vector2(5, 5), new Vector2(0, 0), seed, roomData);//MB: Make a level with placeholder values
             doors = new Door[] { };
             projectiles = new List<Projectile>();
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (rooms[x,y] != null)
+                    if (rooms[x, y] != null)
                     {
                         if ((rooms[x, y].doorProfile & 0b1) == 0b1)
                         {
@@ -67,21 +67,21 @@ namespace SpruceGame
                 {
                     if (rooms[x, y] != null)//MB: Prevents null reference exceptions
                     {
-                        rooms[x, y].Update(mouseState,position + new Coord(x * 512, y * 512));
+                        rooms[x, y].Update(mouseState, position + new Coord(x * 512, y * 512));
                     }
                 }
             }
             foreach (Door door in doors)
             {
-                door.Update(new Coord(960,540) - position);
-                if (door.gap==1)
+                door.Update(new Coord(960, 540) - position);
+                if (door.gap == 1)
                 {
                     foreach (Coord conRoom in door.connectingRooms)
                     {
                         rooms[(int)conRoom.x, (int)conRoom.y].Discover();
                         foreach (Door tempdoor in doors)
                         {
-                            if (Array.IndexOf<Coord>(tempdoor.connectingRooms,conRoom)>-1)
+                            if (Array.IndexOf<Coord>(tempdoor.connectingRooms, conRoom) > -1)
                             {
                                 tempdoor.isVisible = true;
                             }
@@ -94,7 +94,7 @@ namespace SpruceGame
             {
                 for (int i = 1; i <= projectile.speed; i++)
                 {
-                    if (IsSolid(projectile.position + (projectile.movement* i/projectile.speed)))
+                    if (IsSolid(projectile.position + (projectile.movement * i / projectile.speed)))
                     {
                         projectileDisposeList.Add(projectile);
                         break;
@@ -108,26 +108,27 @@ namespace SpruceGame
             }
             projectileDisposeList.Clear();
         }
-        public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string,Texture2D> textureDict,Dictionary<string,MapDataPack> dataPacks)//MB: Draws the level to the screen
+        public void Draw(SpriteBatch spriteBatch, Coord position, GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureDict, Dictionary<string, MapDataPack> dataPacks)//MB: Draws the level to the screen
         {
             for (int x = 0; x < width; x++)
             {
-                for (int y = 0;y < height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    if (rooms[x,y] != null)//MB: Prevents null reference exceptions
+                    if (rooms[x, y] != null)//MB: Prevents null reference exceptions
                     {
-                        rooms[x,y].Draw(spriteBatch, position+new Coord(x*32*16,y * 32 * 16),graphicsDevice,textureDict, dataPacks[dataPackKey]);
+                        rooms[x, y].Draw(spriteBatch, position + new Coord(x * 32 * 16, y * 32 * 16), graphicsDevice, textureDict, dataPacks[dataPackKey]);
                     }
                 }
             }
             foreach (Door door in doors)
             {
-                door.Draw(spriteBatch,position,textureDict, dataPacks[dataPackKey]);
+                door.Draw(spriteBatch, position, textureDict, dataPacks[dataPackKey]);
             }
             foreach (Projectile projectile in projectiles)
             {
-                projectile.Draw(spriteBatch,position,graphicsDevice,textureDict);
+                projectile.Draw(spriteBatch, position, graphicsDevice, textureDict);
             }
+            
         }
         /// <summary>
         /// Returns whether or not the specified position is occupied, preventing movement.

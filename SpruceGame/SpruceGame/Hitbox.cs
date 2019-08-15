@@ -11,6 +11,10 @@ namespace SpruceGame
     public class Hitbox
     {
         private List<SerializableRectangle> boxes;
+        public List<SerializableRectangle> rectangles
+        {
+            get => boxes==null?new List<SerializableRectangle>():boxes;
+        }
         public Hitbox() => boxes = new List<SerializableRectangle>();
         public Hitbox(Rectangle box) : this() => boxes.Add(new SerializableRectangle(box));
         public Hitbox(ICollection<Rectangle> boxes) : this()
@@ -64,7 +68,7 @@ namespace SpruceGame
         }
     }
     [Serializable]
-    class SerializableRectangle
+    public class SerializableRectangle
     {
         private Coord origin;
         private Coord size;

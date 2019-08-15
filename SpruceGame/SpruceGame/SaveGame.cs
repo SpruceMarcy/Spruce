@@ -86,8 +86,66 @@ namespace SpruceGame
         {
             loadedLevel.Draw(spriteBatch,new Coord(960,540)-player.pos,graphicsDevice,textureDict,dataPacks); //MB: Draw the level
             player.Draw(spriteBatch,graphicsDevice,textureDict);
+            DrawHitboxes(spriteBatch, graphicsDevice);
         }
+        public void DrawHitboxes(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+        {
+            List<Hitbox> hitboxes = new List<Hitbox>();
+            hitboxes.Add(player.hitbox.Adjust(new Coord(960, 540)));
+            for (int y = 0; y < loadedLevel.height; y++)
+            {
+                for (int x = 0; x < loadedLevel.width; x++)
+                {
+                    Room thisRoom = loadedLevel.getRoom(x, y);
+                    if (thisRoom != null)
+                    {
+                        for (int tiley = 0; tiley < thisRoom.tiles.GetLength(1); tiley++)
+                        {
+                            for (int tilex = 0; tilex < thisRoom.tiles.GetLength(0); tilex++)
+                            {
+                                Hitbox tileHitbox=thisRoom.tiles[tilex, tiley].hitbox == null ? null : thisRoom.tiles[tilex, tiley].hitbox.Adjust(new Coord(x * 512 + (tilex * 32), y * 512 + (tiley * 32)));
+                                if (tileHitbox != null && (tileHitbox.rectangles[0].rectangle.Location.ToVector2() - player.pos.ToVector2()).Length()<400)
+                                {
+                                    hitboxes.Add(tileHitbox.Adjust(player.pos*-1+ new Coord(960, 540)));
+                                }
+                            }
+                        }
+                    }
 
+                }
+            }
+            foreach(Door door in loadedLevel.doors)
+            {
+                hitboxes.Add(door.hitbox.Adjust(player.pos*-1 + new Coord(960, 540)));
+            }
+            foreach (Hitbox hitbox in hitboxes)
+            {
+                foreach (SerializableRectangle serializableRectangle in hitbox.rectangles)
+                {
+                    Rectangle rectangleToDraw = serializableRectangle.rectangle;
+                    int thicknessOfBorder = 2;
+                    Color borderColor = Color.White;
+                    int pixel = SpruceContentManager.newTexture2D(new Texture2D(graphicsDevice,1,1));
+                    SpruceContentManager.get(pixel).SetData(new Color[] { Color.White });
+                    spriteBatch.Draw(SpruceContentManager.get(pixel), new Rectangle(rectangleToDraw.X, rectangleToDraw.Y, rectangleToDraw.Width, thicknessOfBorder), borderColor);
+
+                    // Draw left line
+                    spriteBatch.Draw(SpruceContentManager.get(pixel), new Rectangle(rectangleToDraw.X, rectangleToDraw.Y, thicknessOfBorder, rectangleToDraw.Height), borderColor);
+
+                    // Draw right line
+                    spriteBatch.Draw(SpruceContentManager.get(pixel), new Rectangle((rectangleToDraw.X + rectangleToDraw.Width - thicknessOfBorder),
+                                                    rectangleToDraw.Y,
+                                                    thicknessOfBorder,
+                                                    rectangleToDraw.Height), borderColor);
+                    // Draw bottom line
+                    spriteBatch.Draw(SpruceContentManager.get(pixel), new Rectangle(rectangleToDraw.X,
+                                                    rectangleToDraw.Y + rectangleToDraw.Height - thicknessOfBorder,
+                                                    rectangleToDraw.Width,
+                                                    thicknessOfBorder), borderColor);
+                }
+
+            }
+        }
     }
 }
 #pragma warning restore CS0618

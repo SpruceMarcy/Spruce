@@ -252,11 +252,11 @@ namespace SpruceGame
             this.connectingRooms = linkedRooms;
             if (isVertical)
             {
-                this.hitbox = new Hitbox(new Rectangle((int)position.x-16, (int)position.y-64,32,128));
+                this.hitbox = new Hitbox(new Rectangle((int)position.x-8, (int)position.y-64,16,128));
             }
             else
             {
-                this.hitbox = new Hitbox(new Rectangle((int)position.x - 64, (int)position.y - 16, 128, 32));
+                this.hitbox = new Hitbox(new Rectangle((int)position.x - 64, (int)position.y - 8, 128, 16));
             }
         }
         public void Update(Coord playerPos)
@@ -266,13 +266,13 @@ namespace SpruceGame
                 gap++;
                 if (isVertical)
                 {
-                    this.hitbox = new Hitbox(new Rectangle((int)position.x - 16, (int)position.y - 64, 32, 64-gap));
-                    hitbox.Add(new Rectangle((int)position.x - 16, (int)position.y+gap, 32, 64 - gap));
+                    this.hitbox = new Hitbox(new Rectangle((int)position.x - 8, (int)position.y - 64, 16, 64-gap));
+                    hitbox.Add(new Rectangle((int)position.x - 8, (int)position.y+gap, 16, 64 - gap));
                 }
                 else
                 {
-                    this.hitbox = new Hitbox(new Rectangle((int)position.x - 64, (int)position.y - 16, 64-gap, 32));
-                    hitbox.Add(new Rectangle((int)position.x + gap, (int)position.y-16,  64 - gap,32));
+                    this.hitbox = new Hitbox(new Rectangle((int)position.x - 64, (int)position.y - 8, 64-gap, 16));
+                    hitbox.Add(new Rectangle((int)position.x + gap, (int)position.y-8,  64 - gap,16));
                 }
             }
             if ((playerPos-position).ToVector2().Length()<64)
